@@ -231,7 +231,10 @@ const BaseChartCreationMenu: FC<{tableId: string; buttonElement: any}> = functio
 
 export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
             handleUpdateCandidates: (chartId: string, tables: DictTable[]) => void,
-    }> = function ChartEditorFC({ cachedCandidates, handleUpdateCandidates }) {
+            showDuplicateButton?: boolean,
+            showSaveButton?: boolean
+            showDeleteButton?: boolean
+    }> = function ChartEditorFC({ cachedCandidates, handleUpdateCandidates, showDuplicateButton = false, showSaveButton = false, showDeleteButton = false }) {
 
     const componentRef = useRef<HTMLHeadingElement>(null);
 
@@ -360,7 +363,8 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
                             </Box>;
 
     
-    let saveButton = focusedChart.saved ?
+    let saveButton = showSaveButton ? (
+        focusedChart.saved ?
         (
             <IconButton size="large" key="save-btn" sx={{ textTransform: "none" }}
                 onClick={() => {
@@ -385,22 +389,24 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
                     <StarBorderIcon  />
                 </IconButton>
             </Tooltip>
-        );
+        )
+    ) : null;
 
-    let duplicateButton = <Tooltip title="duplicate the chart">
-        <IconButton color="primary" key="duplicate-btn" size="small" sx={{ textTransform: "none" }}
-        disabled={focusedChart.intermediate != undefined}
-        onClick={() => {
-            // trackEvent('save-chart', { 
-            //     vlspec: focusedChartVgSpec,
-            //     data_sample: focusedExtTable.slice(0, 100)
-            // });
-            dispatch(dfActions.duplicateChart(focusedChart.id));
-        }}>
-        
-            <ContentCopyIcon  />
-        </IconButton>
-    </Tooltip>
+    let duplicateButton = showDuplicateButton ? (
+        <Tooltip title="duplicate the chart">
+            <IconButton color="primary" key="duplicate-btn" size="small" sx={{ textTransform: "none" }}
+            disabled={focusedChart.intermediate != undefined}
+            onClick={() => {
+                // trackEvent('save-chart', {
+                //     vlspec: focusedChartVgSpec,
+                //     data_sample: focusedExtTable.slice(0, 100)
+                // });
+                dispatch(dfActions.duplicateChart(focusedChart.id));
+            }}>
+                <ContentCopyIcon  />
+            </IconButton>
+        </Tooltip>
+    ) : null;
 
     let createNewChartButton =  <BaseChartCreationMenu tableId={focusedChart.tableRef} buttonElement={
             <Tooltip title="create a new chart">
@@ -408,14 +414,14 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
             </Tooltip>} />
 
 
-    let deleteButton = (
+    let deleteButton = showDeleteButton ? (
         <Tooltip title="delete" key="delete-btn-tooltip">
             <IconButton color="warning" size="small" sx={{ textTransform: "none" }}  disabled={focusedChart.intermediate != undefined}
                         onClick={() => { handleDeleteChart() }}>
                 <DeleteIcon />
             </IconButton>
         </Tooltip>
-    );
+    ): null;
 
     let transformCode = "";
     if (table.derive?.code) {
@@ -636,7 +642,7 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
         //                handleUpdateCandidates={handleUpdateCandidates} handleSetSynthesisStatus={handleSetSynthesisStatus} />
         <Collapse 
             key='encoding-shelf'
-            collapsedSize={48} in={!collapseEditor} orientation='horizontal' 
+            collapsedSize={30} in={!collapseEditor} orientation='horizontal' 
             sx={{position: 'relative'}}>
             <Box sx={{display: 'flex', flexDirection: 'row', height: '100%'}}>
                 <Tooltip placement="left" title={collapseEditor ? "open editor" : "hide editor"}>

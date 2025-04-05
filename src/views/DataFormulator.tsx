@@ -43,8 +43,11 @@ import exampleImageTable from "../assets/example-image-table.png";
 import { ModelSelectionButton } from './ModelSelectionDialog';
 
 //type AppProps = ConnectedProps<typeof connector>;
+interface DataFormulatorFCProps {
+    showDataThread?: boolean;
+}
 
-export const DataFormulatorFC = ({ }) => {
+export const DataFormulatorFC = ({ showDataThread = true }: DataFormulatorFCProps) => {
 
     const displayPanelSize = useSelector((state: DataFormulatorState) => state.displayPanelSize);
     const visPaneSize = useSelector((state: DataFormulatorState) => state.visPaneSize);
@@ -64,7 +67,16 @@ export const DataFormulatorFC = ({ }) => {
     )
 
     const visPaneMain = (
-        <Box sx={{ width: "100%", overflow: "hidden", display: "flex", flexDirection: "row" }}>
+        <Box
+            sx={{
+                width: "100%",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "row",
+                maxWidth: `calc(100vw - ${displayPanelSize}px)`,
+                maxHeight: `calc(100vh - ${visPaneSize}px)`
+            }}
+        >
             <VisualizationViewFC />
         </Box>);
 
@@ -72,9 +84,12 @@ export const DataFormulatorFC = ({ }) => {
 
     const visPane = (// @ts-ignore
         <SplitPane split="horizontal"
-            minSize={100} size={visPaneSize}
+            minSize={30}
+            primary="second"
+            size={visPaneSize}
             className={'vis-split-pane'}
             style={{}}
+            pane1Style={{display: "flex"}}
             pane2Style={{overflowY: "hidden"}}
             onDragFinished={size => { dispatch(dfActions.setVisPaneSize(size)) }}>
             {visPaneMain}
@@ -92,7 +107,7 @@ export const DataFormulatorFC = ({ }) => {
             style={{width: "100%", height: '100%', position: 'relative'}}
             onDragFinished={size => { dispatch(dfActions.setDisplayPanelSize(size)) }}>
             <Box sx={{display: 'flex', width: `100%`, height: '100%'}}>
-                {tables.length > 0 ? 
+                {showDataThread && tables.length > 0 ? 
                         <DataThread />   //<Carousel />
                         : ""} 
                     {visPane}
@@ -106,7 +121,7 @@ export const DataFormulatorFC = ({ }) => {
     const fixedSplitPane = ( 
         <Box sx={{display: 'flex', flexDirection: 'row', height: '100%'}}>
             <Box sx={{display: 'flex', width: `calc(100% - ${280}px)`}}>
-            {tables.length > 0 ? 
+            {showDataThread && tables.length > 0 ? 
                     <DataThread />   //<Carousel />
                     : ""} 
                 {visPane}
@@ -173,9 +188,9 @@ Totals (7 entries)	5	5	5	15
     console.log(selectedModelId)
     
     return (
-        <Box sx={{ display: 'block', width: "100%", height: 'calc(100% - 49px)' }}>
+        <Box sx={{ display: 'block', width: "100%", height: '100%' }}>
             <DndProvider backend={HTML5Backend}>
-                {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? fixedSplitPane : dataUploadRequestBox)} 
+                {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? splitPane : dataUploadRequestBox)} 
             </DndProvider>
         </Box>);
 }

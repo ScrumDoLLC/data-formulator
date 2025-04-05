@@ -60,6 +60,7 @@ h2.view-title {
 
 .Resizer.horizontal {
     height: 11px;
+    min-height: 11px;
     margin: -5px 0;
     border-top: 5px solid rgba(255, 255, 255, 0);
     border-bottom: 5px solid rgba(255, 255, 255, 0);
@@ -74,6 +75,7 @@ h2.view-title {
 
 .Resizer.vertical {
     width: 11px;
+    min-width: 11px;
     margin: 0 -5px;
     border-left: 5px solid rgba(255, 255, 255, 0);
     border-right: 5px solid rgba(255, 255, 255, 0);

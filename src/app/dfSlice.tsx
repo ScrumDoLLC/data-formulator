@@ -315,8 +315,8 @@ export const dataFormulatorSlice = createSlice({
         },
         loadTable: (state, action: PayloadAction<DictTable>) => {
             let table = action.payload;
-            state.tables = [...state.tables, table];
-            state.conceptShelfItems = [...state.conceptShelfItems, ...getDataFieldItems(table)];
+            state.tables = [table];
+            state.conceptShelfItems = [...getDataFieldItems(table)];
 
             state.focusedTableId = table.id;
             state.focusedChartId = undefined;

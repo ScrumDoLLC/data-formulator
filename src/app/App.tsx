@@ -464,31 +464,6 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
         dispatch(fetchAvailableModels());
     }, []);
 
-    let theme = createTheme({
-        typography: {
-            fontFamily: [
-                "Arial",
-                "Roboto",
-                "Helvetica Neue",
-                "sans-serif"
-            ].join(",")
-        },
-        palette: {
-            primary: {
-                main: blue[700]
-            },
-            derived: {
-                main: "rgb(255,215,0)", // gold
-            },
-            custom: {
-                main: "rgb(255, 160, 122)", //lightsalmon
-            },
-            warning: {
-                main: '#bf5600', // New accessible color, original (#ed6c02) has insufficient color contrast of 3.11
-            },
-        },
-    });
-
     let switchers = (
         <Box sx={{ display: "flex" }} key="switchers">
             <ToggleButtonGroup
@@ -577,7 +552,7 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
         }
     ]);
 
-    let app =
+    return (
         <Box sx={{ 
             position: 'absolute',
             top: 0,
@@ -600,12 +575,7 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
                 <RouterProvider router={router} />
                 <MessageSnackbar />
             </Box>
-        </Box>;
-
-    return (
-        <ThemeProvider theme={theme}>
-            {app}
-        </ThemeProvider>
+        </Box>
     );
 }
 
