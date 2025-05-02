@@ -10,13 +10,12 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: path.join(__dirname, 'py-src', 'data_formulator', "dist"),
-    rollupOptions: {
-      output: {
-        entryFileNames: `DataFormulator.js`,  // specific name for the main JS bundle
-        chunkFileNames: `assets/[name]-[hash].js`, // keep default naming for chunks
-        assetFileNames: `assets/[name]-[hash].[ext]` // keep default naming for other assets
-      }
-    }
+    outDir: path.join(__dirname, "dist"),
+    lib: {
+      entry: path.resolve(__dirname, "src/index.tsx"),
+      formats: ["es", "umd"],
+      name: 'index',
+      fileName: (format) => `index.${format}.js`,
+    },
   },
 });

@@ -46,7 +46,7 @@ import _ from 'lodash';
 import '../scss/EncodingShelf.scss';
 import AnimateHeight from 'react-animate-height';
 import { deriveTransformExamplesV2, getDomains, getIconFromType, groupConceptItems } from './ViewUtils';
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 import { Type } from '../data/types';
 
 
@@ -279,7 +279,7 @@ export const EncodingBox: FC<EncodingBoxProps> = function EncodingBox({ channel,
             }),
         };
 
-        fetch(getUrls().SORT_DATA_URL, message)
+        fetchData(getUrls().SORT_DATA_URL, message)
             .then((response) => response.json())
             .then((data) => {
                 setAutoSortInferRunning(false);

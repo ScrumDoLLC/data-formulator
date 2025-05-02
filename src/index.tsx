@@ -1,27 +1,28 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { createTheme, ThemeProvider } from '@mui/material';
+import blue from '@mui/material/colors/blue';
 import React from 'react';
-import './index.css';
-
-import store from './app/store'
 import { Provider } from 'react-redux'
 
-import { AppFC } from './app/App';
+import './index.css';
 
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistStore } from 'redux-persist'
 import { createRoot } from 'react-dom/client';
 import { DataVisualizationWrapper } from './views/DataVisualizationWrapper';
-import { createTheme, ThemeProvider } from '@mui/material';
-import blue from '@mui/material/colors/blue';
+
+import store from './app/store'
+import { assignAppConfig } from './app/utils';
 import { tdata } from './tdata';
 
 let persistor = persistStore(store);
 
 
-const domNode = document.getElementById('root') as HTMLElement;
-const root = createRoot(domNode);
+// const domNode = document.getElementById('root') as HTMLElement;
+// const root = createRoot(domNode);
+
 const AppTheme = createTheme({
     typography: {
         fontFamily: [
@@ -52,7 +53,6 @@ export const RootComponent = ({title, tableData}: any) => {
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <ThemeProvider theme={AppTheme}>
-                    {/* <AppFC /> */}
                     <DataVisualizationWrapper title={title} tableData={tableData} />
                 </ThemeProvider>
             </PersistGate>
@@ -60,6 +60,13 @@ export const RootComponent = ({title, tableData}: any) => {
     )
 }
 
-root.render(<React.StrictMode>
-        <RootComponent title='Test' tableData={tdata} />
-</React.StrictMode>);
+export const ReactUtils = {
+    createRoot,
+    ...React
+};
+
+export const setAppConfig = assignAppConfig;
+
+// root.render(<React.StrictMode>
+//         <RootComponent title='Test' tableData={tdata} />
+// </React.StrictMode>);

@@ -52,7 +52,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 
 // Add interface for app configuration
 interface AppConfig {
@@ -81,7 +81,7 @@ export const ModelSelectionButton: React.FC<{}> = ({ }) => {
 
     // Fetch app configuration
     useEffect(() => {
-        fetch(getUrls().APP_CONFIG)
+        fetchData(getUrls().APP_CONFIG)
             .then(response => response.json())
             .then(data => {
                 setAppConfig(data);
@@ -109,7 +109,7 @@ export const ModelSelectionButton: React.FC<{}> = ({ }) => {
         const fetchModelOptions = async () => {
             setIsLoadingModelOptions(true);
             try {
-                const response = await fetch(getUrls().CHECK_AVAILABLE_MODELS);
+                const response = await fetchData(getUrls().CHECK_AVAILABLE_MODELS);
                 const data = await response.json();
                 
                 // Group models by provider
@@ -176,7 +176,7 @@ export const ModelSelectionButton: React.FC<{}> = ({ }) => {
                 model: model,
             }),
         };
-        fetch(getUrls().TEST_MODEL, {...message })
+        fetchData(getUrls().TEST_MODEL, {...message })
             .then((response) => response.json())
             .then((data) => {
                 let status = data["status"] || 'error';

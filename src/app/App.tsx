@@ -54,7 +54,7 @@ import {
 } from "react-router-dom";
 import { About } from '../views/About';
 import { MessageSnackbar } from '../views/MessageSnackbar';
-import { appConfig, assignAppConfig, getUrls, PopupConfig } from './utils';
+import { appConfig, assignAppConfig, fetchData, getUrls, PopupConfig } from './utils';
 import { DictTable } from '../components/ComponentType';
 import { AppDispatch } from './store';
 import { ActionSubscription, subscribe, unsubscribe } from './embed';
@@ -439,7 +439,7 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
     }, []);
 
     useEffect(() => {
-        fetch('/.auth/me')
+        fetchData('/.auth/me')
             .then(function (response) { return response.json(); })
             .then(function (result) {
                 if (Array.isArray(result) && result.length > 0) {

@@ -32,7 +32,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { dfActions, dfSelectors } from '../app/dfSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 
 interface SelectableCellProps {
     align: any;
@@ -184,7 +184,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
         setSelectedCells([...selectedCells]);
     }
 
-    const TableComponents = {
+    const TableComponents: any = {
         Scroller: TableContainer,
         Table: Table,
         TableHead: (props: any) => <TableHead {...props} className='table-header-container' />,
@@ -298,7 +298,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                         const controller = new AbortController()
                         const timeoutId = setTimeout(() => controller.abort(), 20000)
     
-                        fetch(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
+                        fetchData(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
                             .then((response) => response.json())
                             .then((data) => {
                                 console.log("---model output")

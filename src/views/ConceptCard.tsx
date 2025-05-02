@@ -52,7 +52,7 @@ import { DataFormulatorState, dfActions, dfSelectors } from '../app/dfSlice';
 import Editor from 'react-simple-code-editor';
 
 import { DisambiguationDialog, simpleTableView } from './DisambiguationDialog';
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 import { deriveTransformExamplesV2, getDomains, getIconFromType, processCodeCandidates } from './ViewUtils';
 
 
@@ -107,7 +107,7 @@ export const ConceptCard: FC<ConceptCardProps> = function ConceptCard({ field })
     let notInFocusedTable : boolean;
     if (field.source == "derived") {
         let parentConceptNames = (field.transform as ConceptTransformation)
-                .parentIDs.map((parentID) => conceptShelfItems.find(c => c.id == parentID) as FieldItem).map(f => f.name);
+                .parentIDs.map((parentID) => conceptShelfItems.find(c => c.id == parentID) as FieldItem).map(f => f?.name);
         notInFocusedTable = parentConceptNames.some(name => !focusedChartRefTable?.names.includes(name));
     } else {
         notInFocusedTable = !focusedChartRefTable?.names.includes(field.name);
@@ -702,7 +702,7 @@ export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({
                 const controller = new AbortController()
                 const timeoutId = setTimeout(() => controller.abort(), 20000)
 
-                fetch(getUrls().DERIVE_CONCEPT_URL, {...message, signal: controller.signal })
+                fetchData(getUrls().DERIVE_CONCEPT_URL, {...message, signal: controller.signal })
                     .then((response) => response.json())
                     .then((data) => {
                         console.log("---model output")

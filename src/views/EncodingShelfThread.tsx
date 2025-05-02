@@ -27,7 +27,7 @@ import '../scss/EncodingShelf.scss';
 import { createDictTable, DictTable } from "../components/ComponentType";
 import embed from 'vega-embed';
 
-import { getTriggers, getUrls, assembleVegaChart, resolveChartFields } from '../app/utils';
+import { getTriggers, getUrls, assembleVegaChart, resolveChartFields, fetchData } from '../app/utils';
 
 import { getChartTemplate } from '../components/ChartTemplates';
 import { chartAvailabilityCheck, generateChartSkeleton } from './VisualizationView';
@@ -262,7 +262,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
 
         setReformulteRunning(true);
     
-        fetch(engine, {...message, signal: controller.signal })
+        fetchData(engine, {...message, signal: controller.signal })
             .then((response) => response.json())
             .then((data) => {
 

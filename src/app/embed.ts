@@ -55,17 +55,17 @@ function sendEventToSubscribers(action: Action) {
         switch (action.actionName) {
             case "loadData": {
                 if (subscription.loadData) {
-                    let loadDataAction = action as LoadDataAction;
-                    let table: undefined | DictTable = undefined;
-                    try {
-                        table = createTableFromFromObjectArray(loadDataAction.actionParams.tableName || 'dataset', loadDataAction.actionParams.table);
-                    } catch (error) {
-                        console.error("ActionQueue: error creating table from message", error);
-                    }
-                    if (table) {
-                        console.log('ActionQueue: success creating table from message');
-                        subscription.loadData(table);
-                    }
+                    // let loadDataAction = action as LoadDataAction;
+                    // let table: undefined | DictTable = undefined;
+                    // try {
+                    //     table = createTableFromFromObjectArray(loadDataAction.actionParams.tableName || 'dataset', loadDataAction.actionParams.table);
+                    // } catch (error) {
+                    //     console.error("ActionQueue: error creating table from message", error);
+                    // }
+                    // if (table) {
+                    //     console.log('ActionQueue: success creating table from message');
+                    //     subscription.loadData(table);
+                    // }
                 }
                 break;
             }

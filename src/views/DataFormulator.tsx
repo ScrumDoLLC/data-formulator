@@ -73,8 +73,7 @@ export const DataFormulatorFC = ({ showDataThread = true }: DataFormulatorFCProp
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "row",
-                maxWidth: `calc(100vw - ${displayPanelSize}px)`,
-                maxHeight: `calc(100vh - ${visPaneSize}px)`
+                maxHeight: `calc(100vh - 215px - ${visPaneSize}px)`
             }}
         >
             <VisualizationViewFC />
@@ -89,7 +88,7 @@ export const DataFormulatorFC = ({ showDataThread = true }: DataFormulatorFCProp
             size={visPaneSize}
             className={'vis-split-pane'}
             style={{}}
-            pane1Style={{display: "flex"}}
+            pane1Style={{display: "flex", alignItems: 'center'}}
             pane2Style={{overflowY: "hidden"}}
             onDragFinished={size => { dispatch(dfActions.setVisPaneSize(size)) }}>
             {visPaneMain}
@@ -190,7 +189,7 @@ Totals (7 entries)	5	5	5	15
     return (
         <Box sx={{ display: 'block', width: "100%", height: '100%' }}>
             <DndProvider backend={HTML5Backend}>
-                {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? splitPane : dataUploadRequestBox)} 
+                {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? fixedSplitPane : dataUploadRequestBox)} 
             </DndProvider>
         </Box>);
 }
