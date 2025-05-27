@@ -98,7 +98,7 @@ export const ChatDialog: FC<ChatDialogProps> = function ChatDialog({code, dialog
 
     return (
         <Dialog
-            sx={{ '& .MuiDialog-paper': { maxWidth: '95%', maxHeight: 860, minWidth: 300 } }}
+            sx={{ '& .MuiDialog-paper': { maxWidth: '95%', maxHeight: '100vh', minWidth: 300 } }}
             maxWidth={false}
             open={open}
             key="chat-dialog-dialog"

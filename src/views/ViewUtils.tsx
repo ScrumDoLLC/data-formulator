@@ -3,7 +3,7 @@
 
 import React from "react";
 import ts from "typescript";
-import { runCodeOnInputListsInVM } from "../app/utils";
+import { baseTableToExtTable, runCodeOnInputListsInVM } from "../app/utils";
 import { ConceptTransformation, FieldItem } from "../components/ComponentType";
 import { Type } from "../data/types";
 import { BooleanIcon, NumericalIcon, StringIcon, DateIcon, UnknownIcon } from '../icons';
@@ -165,3 +165,10 @@ export const getIconFromType = (t: Type | undefined): JSX.Element => {
     }
     return <UnknownIcon fontSize="inherit" />;
 };
+
+export const getVegaFormattedTableData = (table: any, conceptShelfItems: FieldItem[]) => {
+    let derivedFields = conceptShelfItems.filter(f => f.source == "derived");
+    let toDeriveFields = derivedFields.filter(f => f.name != "").filter(f => findBaseFields(f, conceptShelfItems).every(f2 => table.names.includes(f2.name)))
+    let extTable = baseTableToExtTable(JSON.parse(JSON.stringify(table.rows)), toDeriveFields, conceptShelfItems);
+    return extTable
+}

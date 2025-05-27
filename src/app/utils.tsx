@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-
+import { Box } from "@mui/material";
 import _, {  } from "lodash";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ts from "typescript";
+import embed, { EmbedOptions } from "vega-embed";
 import { ChannelGroups, getChartChannels, getChartTemplate } from "../components/ChartTemplates";
 import { Channel, Chart, ChartTemplate, ConceptTransformation, EncodingItem, EncodingMap, FieldItem, Trigger } from "../components/ComponentType";
 import { DictTable } from "../components/ComponentType";
@@ -599,6 +600,24 @@ export let getTriggers = (leafTable: DictTable, tables: DictTable[]) => {
         }
     }
     return triggers;
+}
+
+interface GeneratreVegaChartProps {
+    id: string;
+    chart: Chart;
+    conceptShelfItems: FieldItem[];
+    extTable: any[];
+    options?: EmbedOptions;
+}
+
+export const generateVegaChart = ({id, chart, conceptShelfItems, extTable, options = { actions: false, renderer: "svg" }}: GeneratreVegaChartProps) => {
+    let element = <Box id={id} key={`focused-chart`} ></Box>    
+
+    let assembledChart = assembleVegaChart(chart.chartType, chart.encodingMap, conceptShelfItems, extTable);
+    assembledChart['resize'] = true;
+
+    embed('#' + id, { ...assembledChart }, options)
+    return element
 }
 
 /**

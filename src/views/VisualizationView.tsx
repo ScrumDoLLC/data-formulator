@@ -53,7 +53,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 import { CHART_TEMPLATES, getChartTemplate } from '../components/ChartTemplates';
-import { findBaseFields } from './ViewUtils';
+import { findBaseFields, getVegaFormattedTableData } from './ViewUtils';
 
 import Prism from 'prismjs'
 import 'prismjs/components/prism-python' // Language
@@ -252,8 +252,6 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
 
     const conceptShelfItems = useSelector((state: DataFormulatorState) => state.conceptShelfItems);
 
-    let derivedFields = conceptShelfItems.filter(f => f.source == "derived");
-
     const [candidatesViewAnchorEl, setCandidatesViewAnchorEl] = useState<null | HTMLElement>(null);
 
     const [codeViewOpen, setCodeViewOpen] = useState<boolean>(false);
@@ -284,10 +282,9 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
         }
     }, [candidates])
 
-    let codeExpl = table.derive?.codeExpl || "";
+    let codeExpl = table?.derive?.codeExpl || "";
 
-    let toDeriveFields = derivedFields.filter(f => f.name != "").filter(f => findBaseFields(f, conceptShelfItems).every(f2 => table.names.includes(f2.name)))
-    let focusedExtTable = baseTableToExtTable(JSON.parse(JSON.stringify(table.rows)), toDeriveFields, conceptShelfItems);
+    let focusedExtTable = getVegaFormattedTableData(table, conceptShelfItems)
 
     let createChartElement = (chart: Chart, extTable: any[], id: string) => {
         let chartTemplate = getChartTemplate(chart.chartType);
@@ -753,10 +750,7 @@ export const VisualizationViewFC: FC<VisPanelProps> = function VisualizationView
         let chartElements = charts.filter(c => !c.intermediate).map((chart, index) => {
 
             let table = getDataTable(chart, tables, charts, conceptShelfItems);
-    
-            let toDeriveFields = derivedFields.filter(f => f.name != "").filter(f => findBaseFields(f, conceptShelfItems).every(f2 => table.names.includes(f2.name)))
-            let extTable = baseTableToExtTable(JSON.parse(JSON.stringify(table.rows)), toDeriveFields, conceptShelfItems);
-
+            let extTable = getVegaFormattedTableData(table, conceptShelfItems)
             let chartTemplate = getChartTemplate(chart.chartType);
 
             let setIndexFunc = () => {

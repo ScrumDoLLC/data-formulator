@@ -45,9 +45,10 @@ import { ModelSelectionButton } from './ModelSelectionDialog';
 //type AppProps = ConnectedProps<typeof connector>;
 interface DataFormulatorFCProps {
     showDataThread?: boolean;
+    disableDataUpload?: boolean;
 }
 
-export const DataFormulatorFC = ({ showDataThread = true }: DataFormulatorFCProps) => {
+export const DataFormulatorFC = ({ showDataThread = true, disableDataUpload }: DataFormulatorFCProps) => {
 
     const displayPanelSize = useSelector((state: DataFormulatorState) => state.displayPanelSize);
     const visPaneSize = useSelector((state: DataFormulatorState) => state.visPaneSize);
@@ -73,7 +74,7 @@ export const DataFormulatorFC = ({ showDataThread = true }: DataFormulatorFCProp
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "row",
-                maxHeight: `calc(100vh - 215px - ${visPaneSize}px)`
+                height: `calc(100vh - 88px - ${visPaneSize}px)`
             }}
         >
             <VisualizationViewFC />
@@ -83,13 +84,13 @@ export const DataFormulatorFC = ({ showDataThread = true }: DataFormulatorFCProp
 
     const visPane = (// @ts-ignore
         <SplitPane split="horizontal"
-            minSize={30}
+            minSize={26}
             primary="second"
             size={visPaneSize}
             className={'vis-split-pane'}
             style={{}}
             pane1Style={{display: "flex", alignItems: 'center'}}
-            pane2Style={{overflowY: "hidden"}}
+            pane2Style={{overflowY: "hidden", height: 26}}
             onDragFinished={size => { dispatch(dfActions.setVisPaneSize(size)) }}>
             {visPaneMain}
             <Box className="table-box">
@@ -165,22 +166,22 @@ Totals (7 entries)	5	5	5	15
                 href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
     </Box>;
 
-    let modelSelectionDialogBox = <Box sx={{width: '100vw'}}>
-        <Box sx={{paddingTop: "8%", display: "flex", flexDirection: "column", textAlign: "center"}}>
-            <Box component="img" sx={{  width: 256, margin: "auto" }} alt="" src={dfLogo} />
-            <Typography variant="h3" sx={{marginTop: "20px"}}>
-                {toolName}
-            </Typography>
-            <Typography variant="h4">
-                Let's <ModelSelectionButton />
-            </Typography>
-            <Typography variant="body1">Specify an OpenAI or Azure OpenAI endpoint to run {toolName}.</Typography>
-        </Box>
-        <Button size="small" color="inherit" 
-                sx={{position: "absolute", color:'darkgray', bottom: 0, right: 0, textTransform: 'none'}} 
-                target="_blank" rel="noopener noreferrer" 
-                href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
-    </Box>;
+    // let modelSelectionDialogBox = <Box sx={{width: '100vw'}}>
+    //     <Box sx={{paddingTop: "8%", display: "flex", flexDirection: "column", textAlign: "center"}}>
+    //         <Box component="img" sx={{  width: 256, margin: "auto" }} alt="" src={dfLogo} />
+    //         <Typography variant="h3" sx={{marginTop: "20px"}}>
+    //             {toolName}
+    //         </Typography>
+    //         <Typography variant="h4">
+    //             Let's <ModelSelectionButton />
+    //         </Typography>
+    //         <Typography variant="body1">Specify an OpenAI or Azure OpenAI endpoint to run {toolName}.</Typography>
+    //     </Box>
+    //     <Button size="small" color="inherit" 
+    //             sx={{position: "absolute", color:'darkgray', bottom: 0, right: 0, textTransform: 'none'}} 
+    //             target="_blank" rel="noopener noreferrer" 
+    //             href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
+    // </Box>;
 
 
     console.log("selected model?")
@@ -189,7 +190,8 @@ Totals (7 entries)	5	5	5	15
     return (
         <Box sx={{ display: 'block', width: "100%", height: '100%' }}>
             <DndProvider backend={HTML5Backend}>
-                {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? fixedSplitPane : dataUploadRequestBox)} 
+                {/* {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? fixedSplitPane : dataUploadRequestBox)}  */}
+                {tables.length > 0 || disableDataUpload ? fixedSplitPane : dataUploadRequestBox} 
             </DndProvider>
         </Box>);
 }

@@ -399,12 +399,12 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                 dispatch(dfActions.changeChartRunningStatus({chartId, status: false}));
                 dispatch(dfActions.clearUnReferencedTables());
             }, 400);
-            dispatch(dfActions.setVisPaneSize(640));
+            // dispatch(dfActions.setVisPaneSize(640));
             return
         }
 
         dispatch(dfActions.clearUnReferencedTables());
-        dispatch(dfActions.setVisPaneSize(640));
+        // dispatch(dfActions.setVisPaneSize(640));
         //handleRunSynthesisStream(example);
 
         let fieldNamesStr = activeFields.map(f => f.name).reduce(

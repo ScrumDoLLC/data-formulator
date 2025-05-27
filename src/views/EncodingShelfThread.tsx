@@ -202,7 +202,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
                 .flat().map(fieldId => conceptShelfItems.find(f => f.id == fieldId) as FieldItem)
 
         dispatch(dfActions.clearUnReferencedTables());
-        dispatch(dfActions.setVisPaneSize(640));
+        // dispatch(dfActions.setVisPaneSize(640));
 
         let fieldNamesStr = activeFields.map(f => f.name).reduce(
             (a: string, b: string, i, array) => a + (i < array.length - 1 ? ', ' : ' and ') + b, "")

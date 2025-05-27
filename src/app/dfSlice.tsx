@@ -365,6 +365,9 @@ export const dataFormulatorSlice = createSlice({
             let chart = action.payload;
             state.charts = [chart, ...state.charts]
         },
+        setCharts: (state, action: PayloadAction<Chart[]>) => {
+            state.charts = [...action.payload]
+        },
         duplicateChart: (state, action: PayloadAction<string>) => {
             let chartId = action.payload;
 
@@ -498,6 +501,9 @@ export const dataFormulatorSlice = createSlice({
                 chart.encodingMap[channel2] = { fieldID: enc1.fieldID, aggregate: enc1.aggregate, bin: enc1.bin, sortBy: enc1.sortBy };
             }
         },
+        setConceptItems: (state, action: PayloadAction<FieldItem[]>) => {
+            state.conceptShelfItems = [...action.payload];
+        },
         addConceptItems: (state, action: PayloadAction<FieldItem[]>) => {
             state.conceptShelfItems = [...action.payload, ...state.conceptShelfItems];
         },
@@ -569,8 +575,8 @@ export const dataFormulatorSlice = createSlice({
         clearUnReferencedTables: (state) => {
             // remove all tables that are not referred
             let charts = state.charts;
-            let referredTableId = charts.map(chart => getDataTable(chart, state.tables, charts, state.conceptShelfItems).id);
-            state.tables = state.tables.filter(t => !(t.derive && !referredTableId.some(tableId => tableId == t.id)));
+            let referredTableId = charts.map(chart => getDataTable(chart, state.tables, charts, state.conceptShelfItems)?.id);
+            state.tables = state.tables.filter(t => !(t.derive && !referredTableId?.some(tableId => tableId == t.id)));
         },
         clearUnReferencedCustomConcepts: (state) => {
             let fieldNamesFromTables = state.tables.map(t => t.names).flat();

@@ -12,7 +12,7 @@ export default defineConfig({
   build: {
     outDir: path.join(__dirname, "dist"),
     lib: {
-      entry: path.resolve(__dirname, "src/index.tsx"),
+      entry: path.resolve(__dirname, "src/exports.tsx"),
       formats: ["es", "umd"],
       name: 'index',
       fileName: (format) => `index.${format}.js`,
