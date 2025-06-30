@@ -162,9 +162,9 @@ export const fetchFieldSemanticType = createAsyncThunk(
             method: 'POST',
             headers: { 'Content-Type': 'application/json', },
             body: JSON.stringify({
-                token: Date.now(),
+                // token: Date.now(),
                 input_data: {name: table.id, rows: table.rows},
-                model: dfSelectors.getActiveModel(state)
+                // model: dfSelectors.getActiveModel(state)
             }),
         };
 
@@ -173,7 +173,7 @@ export const fetchFieldSemanticType = createAsyncThunk(
         const timeoutId = setTimeout(() => controller.abort(), 20000)
 
         let response = await fetchData(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
-
+        clearTimeout(timeoutId);
         return response.json();
     }
 );
@@ -203,7 +203,7 @@ export const fetchCodeExpl = createAsyncThunk(
         const timeoutId = setTimeout(() => controller.abort(), 20000)
 
         let response = await fetchData(getUrls().CODE_EXPL_URL, {...message, signal: controller.signal })
-
+        clearTimeout(timeoutId);
         return response.text();
     }
 );
@@ -225,7 +225,7 @@ export const fetchAvailableModels = createAsyncThunk(
         const timeoutId = setTimeout(() => controller.abort(), 20000)
 
         let response = await fetchData(getUrls().CHECK_AVAILABLE_MODELS, {...message, signal: controller.signal })
-
+        clearTimeout(timeoutId);
         return response.json();
     }
 );
@@ -267,8 +267,8 @@ export const dataFormulatorSlice = createSlice({
 
             let savedState = action.payload;
 
-            state.models = savedState.models;
-            state.selectedModelId = savedState.selectedModelId;
+            state.models = savedState.models || initialState.models;
+            state.selectedModelId = savedState.selectedModelId || initialState.selectedModelId;
             state.testedModels = []; // models should be tested again
 
             //state.table = undefined;
@@ -288,7 +288,7 @@ export const dataFormulatorSlice = createSlice({
 
             state.chartSynthesisInProgress = [];
 
-            state.config = savedState.config;
+            state.config = savedState.config || initialState.config;
         },
         setConfig: (state, action: PayloadAction<{formulateTimeoutSeconds: number, maxRepairAttempts: number}>) => {
             state.config = action.payload;

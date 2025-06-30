@@ -314,7 +314,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
 
     let existMultiplePossibleBaseTables = tables.filter(t => t.derive == undefined || t.anchored).length > 1;
 
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
 
     let [prompt, setPrompt] = useState<string>(trigger?.instruction || "");
 
@@ -419,7 +419,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
             input_tables: actionTables.map(t => {return { name: t.id.replace(/\.[^/.]+$/ , ""), rows: t.rows }}),
             new_fields: activeBaseFields.map(f => { return {name: f.name} }),
             extra_prompt: instruction,
-            model: activeModel,
+            // model: activeModel,
             max_repair_attempts: config.maxRepairAttempts
         }) 
         let engine = getUrls().SERVER_DERIVE_DATA_URL;
@@ -440,7 +440,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                         input_tables: actionTables.map(t => {return { name: t.id.replace(/\.[^/.]+$/ , ""), rows: t.rows }}),
                         new_fields: activeBaseFields.map(f => { return {name: f.name} }),
                         extra_prompt: instruction,
-                        model: activeModel,
+                        // model: activeModel,
                         additional_messages: additionalMessages,
                         max_repair_attempts: config.maxRepairAttempts
                     });
@@ -453,7 +453,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                         output_fields: activeBaseFields.map(f => { return {name: f.name} }),
                         dialog: currentTable.derive?.dialog,
                         new_instruction: instruction,
-                        model: activeModel,
+                        // model: activeModel,
                         max_repair_attempts: config.maxRepairAttempts
                     })
                     engine = getUrls().SERVER_REFINE_DATA_URL;
@@ -654,6 +654,9 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                         "detail": error.message
                     }));
                 }
+            }).finally(() => {
+                // clear the timeout
+                clearTimeout(timeoutId);
             });
     }
     let defaultInstruction = chart.chartType == "Auto" ? "" : "" // `the output data should contain fields ${activeBaseFields.map(f => `${f.name}`).join(', ')}`

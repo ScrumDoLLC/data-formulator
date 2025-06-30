@@ -665,7 +665,7 @@ export interface CodexDialogBoxProps {
 export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({ 
     initialDescription, inputFieldsInfo, inputData, outputName, callWhenSubmit, handleProcessResults, size="small" }) {
 
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
 
     let [description, setDescription] = useState(initialDescription);
     let [requestTimeStamp, setRequestTimeStamp] = useState<number>(0);
@@ -692,7 +692,7 @@ export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({
                         input_fields: inputFieldsInfo,
                         input_data: {name: inputData['id'], rows: inputData['rows']},
                         output_name: outputName,
-                        model: activeModel
+                        // model: activeModel
                     }),
                 };
 
@@ -717,6 +717,9 @@ export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({
                         handleProcessResults(status, codeList);
                     }).catch((error) => {
                         handleProcessResults("error", []);
+                    }).finally(() => {
+                        // clear the timeout
+                        clearTimeout(timeoutId);
                     });
             }}>
             <PrecisionManufacturingIcon />

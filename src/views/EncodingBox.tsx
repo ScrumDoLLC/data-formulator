@@ -133,7 +133,7 @@ export const EncodingBox: FC<EncodingBoxProps> = function EncodingBox({ channel,
     // use tables for infer domains
     const tables = useSelector((state: DataFormulatorState) => state.tables);
     const charts = useSelector((state: DataFormulatorState) => state.charts);
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     
     let chart = charts.find(c => c.id == chartId) as Chart;
     
@@ -275,7 +275,7 @@ export const EncodingBox: FC<EncodingBoxProps> = function EncodingBox({ channel,
                 token: token,
                 items: domainItems,
                 field: field?.name,
-                model: activeModel
+                // model: activeModel
             }),
         };
 

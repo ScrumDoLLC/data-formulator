@@ -142,7 +142,7 @@ function getComparator<Key extends keyof any>(
 export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, tableName, columnDefs, $tableRef, onSelectionFinished }) => {
 
     const [footerActionExpand, setFooterActionExpand] = React.useState<boolean>(false);
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     
     const [orderBy, setOrderBy] = React.useState<string | undefined>(undefined);
     const [order, setOrder] = React.useState<'asc' | 'desc'>('asc');
@@ -288,9 +288,9 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', },
                             body: JSON.stringify({
-                                token: Date.now(),
+                                // token: Date.now(),
                                 input_data: {name: tableName, rows: rows},
-                                model: activeModel
+                                // model: activeModel
                             }),
                         };
         
@@ -312,6 +312,9 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                                     console.log(codeList)
                                 }
                             }).catch((error) => {
+                            }).finally(() => {
+                                // clear the timeout
+                                clearTimeout(timeoutId);
                             });
                     }
                 }

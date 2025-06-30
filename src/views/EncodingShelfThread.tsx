@@ -154,7 +154,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
     const tables = useSelector((state: DataFormulatorState) => state.tables);
     const charts = useSelector((state: DataFormulatorState) => state.charts);
     let activeThreadChartId = useSelector((state: DataFormulatorState) => state.activeThreadChartId);
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     const config = useSelector((state: DataFormulatorState) => state.config);
 
     let [reformulateRunning, setReformulteRunning] = useState<boolean>(false);
@@ -216,7 +216,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
             input_tables: baseTables.map(t => {return { name: t.id.replace(/\.[^/.]+$/ , ""), rows: t.rows }}),
             new_fields: activeBaseFields.map(f => { return {name: f.name} }),
             extra_prompt: prompt,
-            model: activeModel,
+            // model: activeModel,
             max_repair_attempts: config.maxRepairAttempts
         }) 
         let engine = getUrls().SERVER_DERIVE_DATA_URL;
@@ -229,7 +229,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
                 new_fields: activeBaseFields.map(f => { return {name: f.name} }),
                 extra_prompt: prompt,
                 additional_messages: triggerTable.derive?.dialog,
-                model: activeModel,
+                // model: activeModel,
                 max_repair_attempts: config.maxRepairAttempts
             }) 
             engine = getUrls().SERVER_DERIVE_DATA_URL;
@@ -397,6 +397,9 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
                         "detail": error.message
                     }));
                 }
+            }).finally(() => {
+                // clear the timeout
+                clearTimeout(timeoutId);
             });
     }
 

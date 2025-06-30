@@ -90,7 +90,7 @@ export const DataFormulatorFC = ({ showDataThread = true, disableDataUpload }: D
             className={'vis-split-pane'}
             style={{}}
             pane1Style={{display: "flex", alignItems: 'center'}}
-            pane2Style={{overflowY: "hidden", height: 26}}
+            pane2Style={{overflowY: "hidden"}}
             onDragFinished={size => { dispatch(dfActions.setVisPaneSize(size)) }}>
             {visPaneMain}
             <Box className="table-box">
@@ -183,9 +183,6 @@ Totals (7 entries)	5	5	5	15
     //             href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
     // </Box>;
 
-
-    console.log("selected model?")
-    console.log(selectedModelId)
     
     return (
         <Box sx={{ display: 'block', width: "100%", height: '100%' }}>

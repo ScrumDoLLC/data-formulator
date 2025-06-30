@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 import { Box } from "@mui/material";
 import _, {  } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import ts from "typescript";
 import embed, { EmbedOptions } from "vega-embed";
 import { ChannelGroups, getChartChannels, getChartTemplate } from "../components/ChartTemplates";
@@ -42,6 +42,7 @@ export function getUrls() {
         SERVER_DERIVE_DATA_URL: `${appConfig.serverUrl}/derive-data`,
         SERVER_REFINE_DATA_URL: `${appConfig.serverUrl}/refine-data`,
         CODE_EXPL_URL: `${appConfig.serverUrl}/code-expl`,
+        CODE_EXEC_URL: `${appConfig.serverUrl}/code-exec`,
         SERVER_PROCESS_DATA_ON_LOAD: `${appConfig.serverUrl}/process-data-on-load`,
 
         DATASET_INFO_URL: `${appConfig.serverUrl}/datasets-info`,
@@ -69,16 +70,46 @@ function getCookie(name: string) {
       }
     }
     return cookieValue;
-  }
+}
+
+const responseCache = new Map<string, Response>();
+export const pendingRequests = new Map<string, Promise<Response>>();
 
 export function fetchData(url: string | URL | globalThis.Request, params?: any) {
-    return fetch(url, {
+    const requestKey = hashCode(url + JSON.stringify(params));
+
+    // Return from cache if available
+    const cached = responseCache.get(requestKey);
+    if (cached) {
+      return cached.clone(); // Clone so caller gets a fresh stream
+    }
+
+    // Return in-flight request if already happening
+    const pending = pendingRequests.get(requestKey);
+    if (pending) {
+      return pending.then(res => res.clone());
+    }
+
+    // Start a new fetch
+    const fetchPromise = fetch(url, {
         ...params,
         headers: {
             ...params?.headers,
             'X-CSRFToken': getCookie('csrftoken'),
         },
+    }).then(response => {
+        if (response.ok) {
+          responseCache.set(requestKey, response.clone());
+        }
+        pendingRequests.delete(requestKey);
+        return response;
+    })
+    .catch(error => {
+        pendingRequests.delete(requestKey);
+        throw error;
     });
+    pendingRequests.set(requestKey, fetchPromise);
+    return fetchPromise.then(res => res.clone());
 }
 
 import * as vm from 'vm-browserify';
@@ -602,21 +633,37 @@ export let getTriggers = (leafTable: DictTable, tables: DictTable[]) => {
     return triggers;
 }
 
+
+export interface SavedState {
+    conceptShelfItems?: FieldItem[];
+    charts?: Chart[];
+    tables?: DictTable[];
+    focusedChartId?: string;
+    focusedTableId?: string;
+}
+
 interface GeneratreVegaChartProps {
     id: string;
-    chart: Chart;
-    conceptShelfItems: FieldItem[];
+    savedState?: SavedState;
     extTable: any[];
     options?: EmbedOptions;
 }
 
-export const generateVegaChart = ({id, chart, conceptShelfItems, extTable, options = { actions: false, renderer: "svg" }}: GeneratreVegaChartProps) => {
-    let element = <Box id={id} key={`focused-chart`} ></Box>    
+export const generateVegaChart = ({savedState = {}, extTable, options = { actions: false, renderer: "svg" }}: GeneratreVegaChartProps) => {
+    const { charts, conceptShelfItems, focusedChartId } = savedState;
 
-    let assembledChart = assembleVegaChart(chart.chartType, chart.encodingMap, conceptShelfItems, extTable);
+    const chart = focusedChartId ? charts?.find(c => c.id == focusedChartId) : charts?.[0];
+    let element = <Box id={chart?.id || focusedChartId} key={`focused-chart`} ></Box>
+
+    if (!chart) {
+        console.warn(`No chart found, returning empty element.`);
+        return element;
+    }
+
+    let assembledChart = assembleVegaChart(chart.chartType, chart.encodingMap, conceptShelfItems!, extTable);
     assembledChart['resize'] = true;
 
-    embed('#' + id, { ...assembledChart }, options)
+    embed('#' + chart?.id, { ...assembledChart }, options)
     return element
 }
 
@@ -626,12 +673,61 @@ export const generateVegaChart = ({id, chart, conceptShelfItems, extTable, optio
  * @return {Number}    A 32bit integer
  * @see http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
  */
-export function hashCode(str: string) {
+export function hashCode(str: string): string {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
         let chr = str.charCodeAt(i);
         hash = (hash << 5) - hash + chr;
         hash |= 0; // Convert to 32bit integer
     }
-    return hash;
+    return hash.toString(); // Convert hash to string for use as a cache key
+}
+
+async function loadRows(table: DictTable, allTables: DictTable[]): Promise<any[]> {
+    if (table.rows.length > 0 || !table.derive) {
+        return table.rows; // Rows already populated or no derivation needed
+    }
+    const inputTables = await Promise.all(
+        table.derive.source?.map(async (sourceId) => {
+            const sourceTable = allTables.find((t) => t.id === sourceId);
+            if (!sourceTable) {
+                throw { rows: [] };
+            }
+            if (sourceTable.rows?.length === 0 && sourceTable.derive) {
+                const updatedRows = await loadRows(sourceTable, allTables);
+                return { rows: updatedRows };
+            }
+            return { rows: sourceTable.rows };
+        })
+    );
+
+    const response = await fetchData(getUrls().CODE_EXEC_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            code_str: table.derive.code,
+            input_tables: inputTables,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch rows for table ${table.id}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.content || [];
+}
+
+export async function populateTableRows(tables: DictTable[]): Promise<DictTable[]> {
+    const updatedTables = await Promise.all(
+        tables.map(async (table: DictTable) => {
+            if (table.rows.length === 0 && table.derive) {
+                const updatedRows = await loadRows(table, tables);
+                return { ...table, rows: updatedRows };
+            }
+            return table;
+        })
+    );
+
+    return updatedTables;
 }

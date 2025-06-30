@@ -444,7 +444,7 @@ export const TableURLDialog: React.FC<TableURLDialogProps> = ({ buttonElement, d
 
 export const TableCopyDialogV2: React.FC<TableCopyDialogProps> = ({ buttonElement, disabled }) => {
 
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [tableName, setTableName] = useState<string>("");
@@ -527,7 +527,7 @@ export const TableCopyDialogV2: React.FC<TableCopyDialogProps> = ({ buttonElemen
                 content_type: tableContentType,
                 raw_data: tableContent,
                 image_cleaning_instruction: imageCleaningInstr,
-                model: activeModel
+                // model: activeModel
             }),
         };
 

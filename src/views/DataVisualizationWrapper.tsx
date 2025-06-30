@@ -1,40 +1,41 @@
 import Box from "@mui/material/Box";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createTableFromFromObjectArray } from "../data/utils";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../app/store';
 import { dfActions, fetchFieldSemanticType } from "../app/dfSlice";
 import { DataFormulatorFC } from "./DataFormulator";
-import { Chart, FieldItem } from "../components/ComponentType";
+import { populateTableRows, SavedState } from "../app/utils";
 
-interface DataVisualizationWrapperProps {
+export interface DataVisualizationWrapperProps {
     title: string;
     tableData: any;
-    conceptShelfItems?: FieldItem[];
-    chart?: Chart;
+    savedState?: SavedState;
 }
 
-export const DataVisualizationWrapper = ({ title, tableData, conceptShelfItems, chart }: DataVisualizationWrapperProps) => {
+export const DataVisualizationWrapper = ({ title, tableData = [], savedState = {} }: DataVisualizationWrapperProps) => {
     let dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         const fullTable = createTableFromFromObjectArray(title, tableData, true);
-        dispatch(dfActions.loadTable(fullTable));
-        dispatch(fetchFieldSemanticType(fullTable));
-    }, [tableData]);
-
-    useEffect(() => {
-        if (conceptShelfItems) {
-            dispatch(dfActions.setConceptItems(conceptShelfItems));
+        if (savedState === undefined || Object.keys(savedState).length === 0 || !savedState.tables?.length) {
+            // If no saved state or no rows in the saved state, load the full table
+            dispatch(dfActions.loadTable(fullTable));
+            dispatch(fetchFieldSemanticType(fullTable));
+            return;
         }
-    }, [conceptShelfItems]);
+        const tables = savedState.tables.map(table => ({ ...table }));
+        // For the first table, merge with the full table data
+        tables[0].rows = fullTable.rows;
 
-    useEffect(() => {
-        if (chart) {
-            dispatch(dfActions.setCharts([chart]));
-            dispatch(dfActions.setFocusedChart(chart.id));
-        }
-    }, [chart]);
+        // If there are more tables, ensure they have rows populated
+        populateTableRows(tables).then((tablesWithRows) => {
+            dispatch(dfActions.loadState({
+                ...savedState,
+                tables: tablesWithRows
+            }));
+        });
+    }, [tableData, savedState]);
 
     return (
         <Box sx={{ 

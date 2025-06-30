@@ -1,16 +1,16 @@
 import { createTheme, ThemeProvider } from '@mui/material';
 import blue from '@mui/material/colors/blue';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Provider } from 'react-redux'
 
 import { createRoot } from 'react-dom/client';
-import { DataVisualizationWrapper } from './views/DataVisualizationWrapper';
+import { DataVisualizationWrapper, DataVisualizationWrapperProps } from './views/DataVisualizationWrapper';
 
 import store from './app/store'
-import { assignAppConfig, generateVegaChart } from './app/utils';
+import { assignAppConfig, generateVegaChart, pendingRequests, populateTableRows } from './app/utils';
 import { getVegaFormattedTableData } from './views/ViewUtils';
 import { chartAvailabilityCheck, getDataTable } from './views/VisualizationView';
-import { Chart, FieldItem } from './components/ComponentType';
+import { Chart, DictTable, FieldItem } from './components/ComponentType';
 import { createTableFromFromObjectArray } from './data/utils';
 import { dfActions } from './app/dfSlice';
 
@@ -42,20 +42,26 @@ export const AppTheme = createTheme({
 export const formulatorStore = store;
 
 export const getCurrentChartData = () => {
-    const { charts, tables, conceptShelfItems, focusedChartId } = store.getState();
-    const chart = charts.find(c => c.id == focusedChartId) as Chart;
-    const table = chart && getDataTable(chart, tables, charts, conceptShelfItems);
-    const extTable = table && getVegaFormattedTableData(table, conceptShelfItems);
-
+    const { charts, tables, conceptShelfItems, focusedChartId, focusedTableId, activeThreadChartId } = store.getState();
     return {
-        chart,
+        charts,
         conceptShelfItems,
-        extTable
+        tables: tables.map(table => ({...table, rows: []})),
+        focusedChartId,
+        focusedTableId,
+        activeThreadChartId
     }
 }
 
+export const getPendingRequestsCount = () => {
+    return pendingRequests.size;
+}
+
 export const isChartAvailable = () => {
-    const { chart, conceptShelfItems, extTable } = getCurrentChartData();
+    const { charts, conceptShelfItems, tables, focusedChartId } = store.getState();
+    const chart = charts.find(c => c.id == focusedChartId) as Chart;
+    const table = chart && getDataTable(chart, tables, charts, conceptShelfItems);
+    const extTable = table && getVegaFormattedTableData(table, conceptShelfItems);
     return !!(chart && chartAvailabilityCheck(chart.encodingMap, conceptShelfItems, extTable)[0]);
 }
 
@@ -64,20 +70,40 @@ export const formatTableData = (title: string, tableData: any[], conceptShelfIte
     return getVegaFormattedTableData(table, conceptShelfItems);
 }
 
-export const ChartRenderer = generateVegaChart;
+const loadTableData = async (tableData: any, savedState: any, title: any) => {
+    let table = createTableFromFromObjectArray(title, tableData, true);
+    if (savedState?.tables?.length) {
+        const tables = savedState.tables.map((table: DictTable) => ({ ...table }));
+        // For the first table, merge with the full table data
+        tables[0].rows = table.rows;
+        // If there are more tables, ensure they have rows populated
+        const tablesWithRows = await populateTableRows(tables)
+        table = tablesWithRows?.find((t: DictTable) => t.id == savedState.focusedTableId) || table;
+    }
+    return getVegaFormattedTableData(table, savedState?.conceptShelfItems!);
+};
+
+export const ChartRenderer = ({ tableData, savedState, title, ...props}: any) => {
+    try {
+        const [extTable, setExtTable] = useState<any>([]);
+        useEffect(() => {
+            loadTableData(tableData, savedState, title).then((formattedTable) => {
+                setExtTable(formattedTable);
+            });
+        }, [tableData, savedState, title]);
+
+        return generateVegaChart({...props, extTable, savedState });
+    } catch (e) {
+        console.error("Error generating chart:", e);
+        return <div>Error generating chart</div>;
+    }
+}
 
 export const resetState = () => {
     store.dispatch(dfActions.resetState()); 
 }
 
-export interface IRootComponentProps {
-    title: string;
-    tableData: any[];
-    conceptShelfItems?: FieldItem[];
-    chart?: Chart;
-}
-
-export const RootComponent = (props: IRootComponentProps) => {
+export const RootComponent = (props: DataVisualizationWrapperProps) => {
     return (
         <Provider store={store}>
             <ThemeProvider theme={AppTheme}>
