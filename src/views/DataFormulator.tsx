@@ -11,17 +11,11 @@ import {
 } from '../app/dfSlice'
 
 import SplitPane from "react-split-pane";
-import {
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
 
-    Typography,
-    Box,
-    Tooltip,
-    Button,
-} from '@mui/material';
-
-
-
-import { styled } from '@mui/material/styles';
 
 import { FreeDataViewFC } from './DataView';
 import { VisualizationViewFC } from './VisualizationView';
@@ -38,7 +32,6 @@ import { DataThread } from './DataThread';
 
 import dfLogo from '../assets/df-logo.png';
 import exampleImageTable from "../assets/example-image-table.png";
-import { ModelSelectionButton } from './ModelSelectionDialog';
 
 //type AppProps = ConnectedProps<typeof connector>;
 interface DataFormulatorFCProps {
@@ -112,7 +105,6 @@ export const DataFormulatorFC = ({ showDataThread = true, disableDataUpload }: D
             </Box>
             <Box className="data-editor">
                 {conceptEncodingPanel}
-                {/* <InfoPanelFC $tableRef={$tableRef}/> */}
             </Box>
         </SplitPane>);
 
@@ -126,7 +118,6 @@ export const DataFormulatorFC = ({ showDataThread = true, disableDataUpload }: D
             </Box>
             <Box className="data-editor" sx={{width: 280, borderLeft: '1px solid lightgray'}}>
                 {conceptEncodingPanel}
-                {/* <InfoPanelFC $tableRef={$tableRef}/> */}
             </Box>
         </Box>);
 

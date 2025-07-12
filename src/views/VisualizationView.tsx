@@ -3,31 +3,26 @@
 
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-import {
-    Box,
-    Button,
-    Divider,
-    Icon,
-    IconButton,
-    Stack,
-    Tooltip,
-    Typography,
-    ListItemIcon,
-    ListItemText,
-    MenuItem,
-    LinearProgress,
-    Card,
-    Collapse,
-    ListSubheader,
-    Menu,
-    CardContent,
-    Slider,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import LinearProgress from '@mui/material/LinearProgress';
+import Card from '@mui/material/Card';
+import Collapse from '@mui/material/Collapse';
+import ListSubheader from '@mui/material/ListSubheader';
+import Menu from '@mui/material/Menu';
+import CardContent from '@mui/material/CardContent';
+import Slider from '@mui/material/Slider';
 
 import ButtonGroup from '@mui/material/ButtonGroup';
-
-
-import { styled } from "@mui/material/styles";
 
 import embed from 'vega-embed';
 import AnimateOnChange from 'react-animate-on-change'

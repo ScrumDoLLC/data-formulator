@@ -3,22 +3,18 @@
 
 import React, { FC, useEffect, useMemo, useRef, useState, useCallback, memo } from 'react';
 
-import {
-    Box,
-    Divider,
-    Typography,
-    LinearProgress,
-    Stack,
-    ListItemIcon,
-    Card,
-    IconButton,
-    Tooltip,
-    ButtonGroup,
-    useTheme,
-    SxProps,
-    Button,
-    TextField
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+import Stack from '@mui/material/Stack';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Card from '@mui/material/Card';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import { SxProps, useTheme } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
 
 import { VegaLite } from 'react-vega'
 

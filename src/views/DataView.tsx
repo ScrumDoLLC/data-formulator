@@ -5,12 +5,11 @@ import React, { FC, useEffect, useMemo } from 'react';
 
 import { uniq } from 'lodash-es';
 
-import { Typography, Box, Link, Breadcrumbs } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 
-import 'ag-grid-enterprise';
-
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-material.css';
 import '../scss/DataView.scss';
 
 import { DictTable } from '../components/ComponentType';

@@ -11,30 +11,26 @@ import '../scss/ConceptShelf.scss';
 import Prism from 'prismjs'
 import 'prismjs/components/prism-javascript' // Language
 import 'prismjs/themes/prism.css'; //Example style, you can use another
-import prettier from "prettier";
-import parserBabel from 'prettier/parser-babel';
+import beautify from "js-beautify";
 import { useTheme } from '@mui/material/styles';
 
-import {
-    Chip,
-    Card,
-    Box,
-    CardContent,
-    Typography,
-    IconButton,
-    Button,
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    SelectChangeEvent,
-    MenuItem,
-    Checkbox,
-    Menu,
-    ButtonGroup,
-    Tooltip,
-    styled,
-    LinearProgress} from '@mui/material';
+import Chip from '@mui/material/Chip';
+import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
+import Menu from '@mui/material/Menu';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -258,10 +254,12 @@ export const ConceptCard: FC<ConceptCardProps> = function ConceptCard({ field })
     return cardComponent;
 }
 
-let formatFunc = (jsCode: string) => prettier.format(jsCode, {
-    parser: "babel",
-    plugins: [parserBabel],
-    printWidth: 40
+let formatFunc = (jsCode: string) => beautify.js(jsCode, {
+    indent_size: 2,
+    max_preserve_newlines: 2,
+    wrap_line_length: 40,
+    end_with_newline: false,
+    space_in_empty_paren: true,
 }).trim();
 
 export interface ConceptFormProps {

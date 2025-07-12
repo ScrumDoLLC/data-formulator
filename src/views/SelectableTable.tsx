@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import * as React from 'react';
+import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,22 +10,23 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Box } from '@mui/system';
 
 
 import { TSelectableItemProps, createSelectable } from 'react-selectable-fast';
 import { SelectableGroup } from 'react-selectable-fast';
 import { Type } from '../data/types';
 import { getIconFromType } from './ViewUtils';
-import { IconButton, TableSortLabel, Tooltip, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { visuallyHidden } from '@mui/utils';
 
 import { max, min, uniq } from 'lodash-es';
 
 import { FieldSource } from '../components/ComponentType';
 
-import { useTheme } from '@mui/material/styles';
-import { alpha } from "@mui/material";
+import { useTheme, alpha } from '@mui/material/styles';
 
 
 interface SelectableCellProps {

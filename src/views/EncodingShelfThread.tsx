@@ -5,17 +5,15 @@ import { FC, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { DataFormulatorState, dfActions, dfSelectors, fetchCodeExpl, fetchFieldSemanticType, generateFreshChart } from '../app/dfSlice';
 
-import {
-    Box,
-    Typography,
-    Button,
-    CircularProgress,
-    IconButton,
-    Tooltip,
-    Collapse,
-    Stack,
-    Card,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Collapse from '@mui/material/Collapse';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
 
 import React from 'react';
 
@@ -35,7 +33,6 @@ import TableRowsIcon from '@mui/icons-material/TableRowsOutlined';
 import InsightsIcon from '@mui/icons-material/Insights';
 import AnchorIcon from '@mui/icons-material/Anchor';
 
-import { findBaseFields } from './ViewUtils';
 import { AppDispatch } from '../app/store';
 
 import { EncodingShelfCard, TriggerCard } from './EncodingShelfCard';

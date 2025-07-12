@@ -1,6 +1,6 @@
-import { createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import blue from '@mui/material/colors/blue';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState, createElement } from 'react';
 import { Provider } from 'react-redux'
 
 import { createRoot } from 'react-dom/client';
@@ -115,7 +115,7 @@ export const RootComponent = (props: DataVisualizationWrapperProps) => {
 
 export const ReactUtils = {
     createRoot,
-    ...React
+    createElement
 };
 
 export const setAppConfig = assignAppConfig;

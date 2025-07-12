@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import { find } from "lodash-es";
 import React, { useEffect, useRef } from "react";
 import { transform } from "sucrase";
@@ -75,19 +75,19 @@ function getCookie(name: string) {
 const responseCache = new Map<string, Response>();
 export const pendingRequests = new Map<string, Promise<Response>>();
 
-export function fetchData(url: string | URL | globalThis.Request, params?: any) {
+export function fetchData(url: string | URL | globalThis.Request, params?: any): Promise<Response> {
     const requestKey = hashCode(url + JSON.stringify(params));
 
     // Return from cache if available
     const cached = responseCache.get(requestKey);
     if (cached) {
-      return cached.clone(); // Clone so caller gets a fresh stream
+        return Promise.resolve(cached.clone()); // Clone so caller gets a fresh stream
     }
 
     // Return in-flight request if already happening
     const pending = pendingRequests.get(requestKey);
     if (pending) {
-      return pending.then(res => res.clone());
+        return pending.then(res => res.clone());
     }
 
     // Start a new fetch
@@ -99,7 +99,7 @@ export function fetchData(url: string | URL | globalThis.Request, params?: any) 
         },
     }).then(response => {
         if (response.ok) {
-          responseCache.set(requestKey, response.clone());
+            responseCache.set(requestKey, response.clone());
         }
         pendingRequests.delete(requestKey);
         return response;
@@ -108,6 +108,7 @@ export function fetchData(url: string | URL | globalThis.Request, params?: any) 
         pendingRequests.delete(requestKey);
         throw error;
     });
+
     pendingRequests.set(requestKey, fetchPromise);
     return fetchPromise.then(res => res.clone());
 }

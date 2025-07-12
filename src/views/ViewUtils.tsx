@@ -9,8 +9,7 @@ import { BooleanIcon, NumericalIcon, StringIcon, DateIcon, UnknownIcon } from '.
 
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
-import prettier from "prettier";
-import parserBabel from 'prettier/parser-babel';
+import beautify from "js-beautify";
 import { DictTable } from '../components/ComponentType';
 import { transform } from "sucrase";
 
@@ -82,10 +81,12 @@ export const processCodeCandidates = (rawCodeList: string[], parentIDs: string[]
     // do some quick parse check
     let tempCodeList = rawCodeList.filter(code => {
         try {
-            prettier.format(code, {
-                parser: "babel",
-                plugins: [parserBabel]
-            })
+            beautify.js(code, {
+                indent_size: 2,
+                max_preserve_newlines: 2,
+                end_with_newline: false,
+                space_in_empty_paren: true,
+            }).trim();
             return true;
         } catch {
             return false;

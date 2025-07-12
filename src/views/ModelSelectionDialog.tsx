@@ -11,37 +11,26 @@ import {
     ModelConfig,
 } from '../app/dfSlice'
 
-import {
-    Button,
-    Tooltip,
-    Typography,
-    IconButton,
-    DialogTitle,
-    Dialog,
-    DialogContent,
-    DialogActions,
-    Radio,
-    TextField,
-    TableContainer,
-    TableHead,
-    Table,
-    TableCell,
-    TableRow,
-    TableBody,
-    Autocomplete,
-    CircularProgress,
-    FormControl,
-    Select,
-    SelectChangeEvent,
-    MenuItem,
-    OutlinedInput,
-    Paper,
-} from '@mui/material';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Radio from '@mui/material/Radio';
+import TextField from '@mui/material/TextField';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
 
-
-import { styled } from '@mui/material/styles';
-
-import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ClearIcon from '@mui/icons-material/Clear';
 import VisibilityIcon from '@mui/icons-material/Visibility';

@@ -9,17 +9,25 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Box } from '@mui/system';
 
-import { useTheme } from '@mui/material/styles';
-import { alpha, Collapse, Divider, Paper, ToggleButton, Tooltip } from "@mui/material";
+import { useTheme, alpha } from '@mui/material/styles';
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import ToggleButton from "@mui/material/ToggleButton";
+import Tooltip from "@mui/material/Tooltip";
 
 import { TSelectableItemProps, createSelectable } from 'react-selectable-fast';
 import { SelectableGroup } from 'react-selectable-fast';
 import { Type } from '../data/types';
 import { getIconFromType } from './ViewUtils';
 
-import { IconButton, InputAdornment, OutlinedInput, TableSortLabel, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
@@ -29,10 +37,8 @@ import { debounce, sortedIndex, uniq, without } from 'lodash-es';
 import { FieldSource } from '../components/ComponentType';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { dfActions, dfSelectors } from '../app/dfSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { fetchData, getUrls } from '../app/utils';
 
 interface SelectableCellProps {

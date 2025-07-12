@@ -9,9 +9,20 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { alpha, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Divider, 
-         IconButton, Input, CircularProgress, LinearProgress, Paper, TextField, useTheme, 
-         Card} from '@mui/material';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import { alpha, useTheme } from '@mui/material/styles';
 import { CustomReactTable } from './ReactTable';
 import { DictTable } from "../components/ComponentType";
 
@@ -24,10 +35,7 @@ import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CancelIcon from '@mui/icons-material/Cancel';
-
-import ReactDiffViewer from 'react-diff-viewer'
 
 import { DataFormulatorState, dfActions, dfSelectors, fetchFieldSemanticType } from '../app/dfSlice';
 import { useDispatch, useSelector } from 'react-redux';

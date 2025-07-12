@@ -3,25 +3,18 @@
 
 import { FC, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useTheme } from '@mui/material/styles';
-import { alpha } from "@mui/material";
 
 import '../scss/ConceptShelf.scss';
 
-import {
-    Box,
-    Typography,
-    Tooltip,
-    Button,
-    Divider,
-} from '@mui/material';
-
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 
 import { FieldItem, Channel } from '../components/ComponentType';
 
 import React from 'react';
-import { DataFormulatorState, dfActions, dfSelectors } from '../app/dfSlice';
+import { DataFormulatorState, dfActions } from '../app/dfSlice';
 import { ConceptCard } from './ConceptCard';
 import { Type } from '../data/types';
 import { groupConceptItems } from './ViewUtils';

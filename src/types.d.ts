@@ -3,8 +3,4 @@ declare module "*.png" {
     export default content;
 }
 
-declare module "prettier";
-
-declare module "prettier/parser-babel";
-
 declare module "vm-browserify";
