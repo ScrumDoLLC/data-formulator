@@ -299,10 +299,10 @@ export const TableUploadDialog: React.FC<TableUploadDialogProps> = ({ buttonElem
                            file.name.endsWith('.xls')) {
                     // Handle Excel files
                     const reader = new FileReader();
-                    reader.onload = (e) => {
+                    reader.onload = async (e) => {
                         const arrayBuffer = e.target?.result as ArrayBuffer;
                         if (arrayBuffer) {
-                            let tables = loadBinaryDataWrapper(uniqueName, arrayBuffer);
+                            let tables = await loadBinaryDataWrapper(uniqueName, arrayBuffer);
                             for (let table of tables) {
                                 dispatch(dfActions.loadTable(table));
                                 dispatch(fetchFieldSemanticType(table));

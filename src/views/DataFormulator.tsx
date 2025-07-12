@@ -10,8 +10,6 @@ import {
     dfActions,
 } from '../app/dfSlice'
 
-import _ from 'lodash';
-
 import SplitPane from "react-split-pane";
 import {
 

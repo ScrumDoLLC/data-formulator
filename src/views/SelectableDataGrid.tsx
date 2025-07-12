@@ -24,7 +24,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
 
-import _ from 'lodash';
+import { debounce, sortedIndex, uniq, without } from 'lodash-es';
+
 import { FieldSource } from '../components/ComponentType';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -170,7 +171,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
 
     const onClickCell = (event: any, rowIndex: number, colIndex: number) => {
         // console.log('click cell');
-        // console.log(_.without(selectedCells, [rowIndex, colIndex]));
+        // console.log(without(selectedCells, [rowIndex, colIndex]));
         // console.log(event);
         for (let i = 0; i < selectedCells.length; i++) {
             const [r, c] = selectedCells[i];
@@ -180,7 +181,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                 return;
             }
         }
-        selectedCells.splice(_.sortedIndex(selectedCells, [rowIndex, colIndex]), 0, [rowIndex, colIndex]);
+        selectedCells.splice(sortedIndex(selectedCells, [rowIndex, colIndex]), 0, [rowIndex, colIndex]);
         setSelectedCells([...selectedCells]);
     }
 
@@ -201,7 +202,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
         setSelectedColumnNames([]);
     }
 
-    const debouncedSearchHandler = React.useCallback(_.debounce((value: string) => {
+    const debouncedSearchHandler = React.useCallback(debounce((value: string) => {
         setSearchValue(value);
     }, 300), [searchText]);
 
@@ -211,10 +212,10 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
 
 
     const handleSelectionFinish = (selected: any[]) => {
-        let newSelectedCells = _.uniq(selected.map(x => x.props.indices));
+        let newSelectedCells = uniq(selected.map(x => x.props.indices));
         setSelectedCells(newSelectedCells);
         let values = selected.map(x => x.props.value);
-        let columns = _.uniq(selected.map(x => x.props.column.id));
+        let columns = uniq(selected.map(x => x.props.column.id));
 
         setSelectedColumnNames(columns);
         onSelectionFinished(columns, values);

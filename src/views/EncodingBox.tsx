@@ -41,8 +41,6 @@ import { FieldItem, Channel, EncodingItem, AggrOp, AGGR_OP_LIST,
         ConceptTransformation, Chart, duplicateField } from "../components/ComponentType";
 import { EncodingDropResult } from "../views/ConceptShelf";
 
-import _ from 'lodash';
-
 import '../scss/EncodingShelf.scss';
 import AnimateHeight from 'react-animate-height';
 import { deriveTransformExamplesV2, getDomains, getIconFromType, groupConceptItems } from './ViewUtils';

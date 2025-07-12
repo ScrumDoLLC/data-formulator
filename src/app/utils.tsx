@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 import { Box } from "@mui/material";
-import _, {  } from "lodash";
-import React, { useEffect, useMemo, useRef } from "react";
-import ts from "typescript";
+import { find } from "lodash-es";
+import React, { useEffect, useRef } from "react";
+import { transform } from "sucrase";
 import embed, { EmbedOptions } from "vega-embed";
 import { ChannelGroups, getChartChannels, getChartTemplate } from "../components/ChartTemplates";
 import { Channel, Chart, ChartTemplate, ConceptTransformation, EncodingItem, EncodingMap, FieldItem, Trigger } from "../components/ComponentType";
@@ -133,7 +133,7 @@ export function runCodeOnInputListsInVM(
         try {
             // slightly safer?
             if (code != "") {
-                let jsCode = ts.transpile(code);
+                let jsCode = transform(code, {transforms: ["typescript"]}).code;
                 //target = eval(jsCode)(s);
                 
                 //console.log(`let func = ${code}; func(arg)`)
@@ -149,7 +149,7 @@ export function runCodeOnInputListsInVM(
     } else if (mode == "faster") {
         try {
             if (code != "") {
-                let jsCode = ts.transpile(code);
+                let jsCode = transform(code, {transforms: ["typescript"]}).code;
                 let func = eval(jsCode);
                 ioPairs = inputTupleList.map(args => {
                     let target = undefined;
@@ -223,7 +223,7 @@ export function baseTableToExtTable(table: any[], derivedFields: FieldItem[], al
                 }
             });
             
-            let jsCode = ts.transpile((field.transform as ConceptTransformation).code as string);
+            let jsCode = transform((field.transform as ConceptTransformation).code as string, {transforms: ["typescript"]}).code;
             let func = eval(jsCode);
     
             //let baseFieldCols = baseFields.map(f => table.map((row) => row[f.name]));
@@ -324,7 +324,7 @@ export const assembleVegaChart = (
             encodingObj["scale"] = {"type": "sqrt", "zero": true};
         }
 
-        const field = encoding.fieldID ? _.find(conceptShelfItems, (f) => f.id === encoding.fieldID) : undefined;
+        const field = encoding.fieldID ? find(conceptShelfItems, (f: any) => f.id === encoding.fieldID) : undefined;
         if (field) {
             // create the encoding
             encodingObj["field"] = field.name;

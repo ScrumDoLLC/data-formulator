@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 import React from "react";
-import ts from "typescript";
 import { baseTableToExtTable, runCodeOnInputListsInVM } from "../app/utils";
 import { ConceptTransformation, FieldItem } from "../components/ComponentType";
 import { Type } from "../data/types";
@@ -13,6 +12,7 @@ import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import prettier from "prettier";
 import parserBabel from 'prettier/parser-babel';
 import { DictTable } from '../components/ComponentType';
+import { transform } from "sucrase";
 
 // from a list of potential tables, extract domain of a given basic or custom fields
 export const getDomains = (field: FieldItem, tables: DictTable[]) : any[][] => {
@@ -38,7 +38,7 @@ export const deriveTransformExamplesV2 = (code: string, parentIDs: string[], inp
     let func : any = undefined;
     let inputRequiresColumnList = false;
     try {
-        func = eval(ts.transpile(code));
+        func = transform(code, {transforms: ["typescript"]}).code;
         // prepare the function
         if (func.length == parentConcepts.length * 2 + 1) {
             // we need to retain domain without dedup so that the example table looks right

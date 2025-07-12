@@ -1,9 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    visualizer({
+      filename: 'dist/bundle-analysis.html', // Output file for the analysis
+      open: true, // Automatically open the analysis in the browser
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

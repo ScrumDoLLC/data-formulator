@@ -3,7 +3,7 @@
 
 import React, { FC, useEffect, useMemo } from 'react';
 
-import _ from 'lodash';
+import { uniq } from 'lodash-es';
 
 import { Typography, Box, Link, Breadcrumbs } from '@mui/material';
 
@@ -85,7 +85,7 @@ export const FreeDataViewFC: FC<FreeDataViewProps> = function DataView({  $table
 
     // handle when selection changes
     const onRangeSelectionChanged = (columns: string[], selected: any[]) => {
-        let values = _.uniq(selected);
+        let values = uniq(selected);
     };
 
     let tableToRender = extTables; 

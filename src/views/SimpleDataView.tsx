@@ -3,8 +3,6 @@
 
 import React, { FC, useEffect, useState, useRef } from 'react';
 
-import _ from 'lodash';
-
 import { Typography, Box, Button } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SouthIcon from '@mui/icons-material/South';

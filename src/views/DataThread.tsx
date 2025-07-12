@@ -39,7 +39,7 @@ import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import InsightsIcon from '@mui/icons-material/Insights';
 import CheckIcon from '@mui/icons-material/Check';
 
-import _ from 'lodash';
+import { chunk, isEqual} from 'lodash-es';
 import { getChartTemplate } from '../components/ChartTemplates';
 import { findBaseFields } from './ViewUtils';
 
@@ -256,7 +256,7 @@ let SingleThreadView: FC<{
 
                 let previousActiveFields = new Set(i == 0 ? [] : extractActiveFields(triggers[i - 1]))
                 let currentActiveFields = new Set(extractActiveFields(trigger))
-                let fieldsIdentical = _.isEqual(previousActiveFields, currentActiveFields)
+                let fieldsIdentical = isEqual(previousActiveFields, currentActiveFields)
 
                 let triggerCard = <div key={'thread-card-trigger-box'}>
                     <Box sx={{ flex: 1 }} >
@@ -780,7 +780,7 @@ export const DataThread: FC<{}> = function ({ }) {
 
 
     let jumpButtonsDrawerOpen = <ButtonGroup size="small" color="primary">
-        {_.chunk(Array.from({length: leafTables.length}, (_, i) => i), 3).map((group, groupIdx) => {
+        {chunk(Array.from({length: leafTables.length}, (_, i) => i), 3).map((group, groupIdx) => {
             const startNum = group[0] + 1;
             const endNum = group[group.length - 1] + 1;
             const label = startNum === endNum ? `${startNum}` : `${startNum}-${endNum}`;

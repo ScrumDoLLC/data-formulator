@@ -12,10 +12,6 @@ import {
     fetchFieldSemanticType,
 } from './dfSlice'
 
-import blue from '@mui/material/colors/blue';
-
-import _ from 'lodash';
-
 import {
     Button,
     Tooltip,

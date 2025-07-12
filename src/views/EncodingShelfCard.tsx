@@ -27,9 +27,7 @@ import {
 
 import React from 'react';
 
-import { Channel, EncodingItem, ConceptTransformation, Chart, FieldItem, Trigger, duplicateChart } from "../components/ComponentType";
-
-import _ from 'lodash';
+import { Channel, ConceptTransformation, Chart, FieldItem, Trigger, duplicateChart } from "../components/ComponentType";
 
 import '../scss/EncodingShelf.scss';
 import { createDictTable, DictTable } from "../components/ComponentType";

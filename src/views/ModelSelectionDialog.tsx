@@ -11,8 +11,6 @@ import {
     ModelConfig,
 } from '../app/dfSlice'
 
-import _ from 'lodash';
-
 import {
     Button,
     Tooltip,

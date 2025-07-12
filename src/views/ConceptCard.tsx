@@ -56,7 +56,6 @@ import { fetchData, getUrls } from '../app/utils';
 import { deriveTransformExamplesV2, getDomains, getIconFromType, processCodeCandidates } from './ViewUtils';
 
 
-import _ from 'lodash';
 import { DictTable } from '../components/ComponentType';
 
 export interface ConceptCardProps {

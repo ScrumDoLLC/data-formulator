@@ -21,7 +21,7 @@ import React from 'react';
 
 import { EncodingItem, ConceptTransformation, Chart, FieldItem, Trigger } from "../components/ComponentType";
 
-import _ from 'lodash';
+import { isEqual } from 'lodash-es';
 
 import '../scss/EncodingShelf.scss';
 import { createDictTable, DictTable } from "../components/ComponentType";
@@ -435,7 +435,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
 
         let previousActiveFields = new Set(i == 0 ? [] : extractActiveFields(triggers[i - 1]))
         let currentActiveFields = new Set(extractActiveFields(trigger))
-        let fieldsIdentical = _.isEqual(previousActiveFields, currentActiveFields)
+        let fieldsIdentical = isEqual(previousActiveFields, currentActiveFields)
 
         return  <Box 
             key={`${trigger.tableId}-trigger-card`}

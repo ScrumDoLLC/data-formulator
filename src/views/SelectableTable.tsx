@@ -19,7 +19,8 @@ import { getIconFromType } from './ViewUtils';
 import { IconButton, TableSortLabel, Tooltip, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 
-import _ from 'lodash';
+import { max, min, uniq } from 'lodash-es';
+
 import { FieldSource } from '../components/ComponentType';
 
 import { useTheme } from '@mui/material/styles';
@@ -306,12 +307,12 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({ rows, columnDe
                     onSelectionFinish={(selected: any[]) => {
                         // console.log($tableRef.current);
                         // Get bounds based on indices
-                        let left = _.min(selected.map(x => x.props.indices[0])),
-                            right = _.max(selected.map(x => x.props.indices[0])),
-                            bottom = _.max(selected.map(x => x.props.indices[1])),
-                            top = _.min(selected.map(x => x.props.indices[1]));
+                        let left = min(selected.map(x => x.props.indices[0])),
+                            right = max(selected.map(x => x.props.indices[0])),
+                            bottom = max(selected.map(x => x.props.indices[1])),
+                            top = min(selected.map(x => x.props.indices[1]));
 
-                        let columns = _.uniq(selected.map(x => x.props.column));
+                        let columns = uniq(selected.map(x => x.props.column));
 
                         setSelectedBounds([left, top, right, bottom]);
                         setSelectedColumnNames(columns as string[]);
