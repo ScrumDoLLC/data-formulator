@@ -62,7 +62,7 @@ export const isChartAvailable = () => {
     const chart = charts.find(c => c.id == focusedChartId) as Chart;
     const table = chart && getDataTable(chart, tables, charts, conceptShelfItems);
     const extTable = table && getVegaFormattedTableData(table, conceptShelfItems);
-    return !!(chart && chartAvailabilityCheck(chart.encodingMap, conceptShelfItems, extTable)[0]);
+    return !!(chart && extTable && chartAvailabilityCheck(chart.encodingMap, conceptShelfItems, extTable)[0]);
 }
 
 export const formatTableData = (title: string, tableData: any[], conceptShelfItems: FieldItem[]) => {
@@ -87,6 +87,9 @@ export const ChartRenderer = ({ tableData, savedState, title, ...props}: any) =>
     try {
         const [extTable, setExtTable] = useState<any>([]);
         useEffect(() => {
+            if (!tableData?.length) {
+                return;
+            }
             loadTableData(tableData, savedState, title).then((formattedTable) => {
                 setExtTable(formattedTable);
             });

@@ -152,9 +152,12 @@ export let CodeBox : FC<{code: string, language: string}> = function  CodeBox({ 
           <code className={`language-${language}`} >{code}</code>
         </pre>
     );
-  }
+}
 
 export const chartAvailabilityCheck = (encodingMap: EncodingMap, conceptShelfItems: FieldItem[], data: any[]) => {
+    if (!encodingMap || !conceptShelfItems?.length || !data?.length) {
+        return [false, []];
+    }
     let unfilledFields = [];
     let dataFields = [...Object.keys(data[0])];
 
