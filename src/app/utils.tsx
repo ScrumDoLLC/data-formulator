@@ -654,7 +654,7 @@ export const generateVegaChart = ({savedState = {}, extTable, options = { action
     const { charts, conceptShelfItems, focusedChartId } = savedState;
 
     const chart = focusedChartId ? charts?.find(c => c.id == focusedChartId) : charts?.[0];
-    let element = <Box id={chart?.id || focusedChartId} key={`focused-chart`} ></Box>
+    let element = <Box id={chart?.id || focusedChartId} key={`focused-chart`} sx={{ height: '100%', width: '100%' }}></Box>
 
     if (!chart) {
         console.warn(`No chart found, returning empty element.`);
@@ -664,7 +664,10 @@ export const generateVegaChart = ({savedState = {}, extTable, options = { action
     let assembledChart = assembleVegaChart(chart.chartType, chart.encodingMap, conceptShelfItems!, extTable);
     assembledChart['resize'] = true;
 
-    embed('#' + chart?.id, { ...assembledChart }, options)
+    embed('#' + chart?.id, { ...assembledChart }, options).then((result) => {
+        // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+        result.view.container()?.getElementsByTagName("svg")?.[0]?.setAttribute("style", `width: 100%; height: 100%`);
+    });
     return element
 }
 
