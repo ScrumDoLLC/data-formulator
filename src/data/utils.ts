@@ -3,7 +3,6 @@
 
 import * as d3 from 'd3';
 import Column from './column';
-import * as XLSX from 'xlsx';
 
 import { DictTable } from '../components/ComponentType';
 import { CoerceType, TestType, Type } from './types';
@@ -154,8 +153,9 @@ export function tupleEqual(a: any[], b: any[]) {
     return true;
 }
 
-export const loadBinaryDataWrapper = (title: string, arrayBuffer: ArrayBuffer): DictTable[] => {
+export const loadBinaryDataWrapper = async (title: string, arrayBuffer: ArrayBuffer): Promise<DictTable[]> => {
     try {
+        const XLSX = await import('xlsx');
         // Read the Excel file
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
         

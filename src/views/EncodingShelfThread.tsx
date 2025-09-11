@@ -5,29 +5,27 @@ import { FC, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { DataFormulatorState, dfActions, dfSelectors, fetchCodeExpl, fetchFieldSemanticType, generateFreshChart } from '../app/dfSlice';
 
-import {
-    Box,
-    Typography,
-    Button,
-    CircularProgress,
-    IconButton,
-    Tooltip,
-    Collapse,
-    Stack,
-    Card,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Collapse from '@mui/material/Collapse';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
 
 import React from 'react';
 
 import { EncodingItem, ConceptTransformation, Chart, FieldItem, Trigger } from "../components/ComponentType";
 
-import _ from 'lodash';
+import { isEqual } from 'lodash-es';
 
 import '../scss/EncodingShelf.scss';
 import { createDictTable, DictTable } from "../components/ComponentType";
 import embed from 'vega-embed';
 
-import { getTriggers, getUrls, assembleVegaChart, resolveChartFields } from '../app/utils';
+import { getTriggers, getUrls, assembleVegaChart, resolveChartFields, fetchData } from '../app/utils';
 
 import { getChartTemplate } from '../components/ChartTemplates';
 import { chartAvailabilityCheck, generateChartSkeleton } from './VisualizationView';
@@ -35,7 +33,6 @@ import TableRowsIcon from '@mui/icons-material/TableRowsOutlined';
 import InsightsIcon from '@mui/icons-material/Insights';
 import AnchorIcon from '@mui/icons-material/Anchor';
 
-import { findBaseFields } from './ViewUtils';
 import { AppDispatch } from '../app/store';
 
 import { EncodingShelfCard, TriggerCard } from './EncodingShelfCard';
@@ -154,7 +151,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
     const tables = useSelector((state: DataFormulatorState) => state.tables);
     const charts = useSelector((state: DataFormulatorState) => state.charts);
     let activeThreadChartId = useSelector((state: DataFormulatorState) => state.activeThreadChartId);
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     const config = useSelector((state: DataFormulatorState) => state.config);
 
     let [reformulateRunning, setReformulteRunning] = useState<boolean>(false);
@@ -202,7 +199,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
                 .flat().map(fieldId => conceptShelfItems.find(f => f.id == fieldId) as FieldItem)
 
         dispatch(dfActions.clearUnReferencedTables());
-        dispatch(dfActions.setVisPaneSize(640));
+        // dispatch(dfActions.setVisPaneSize(640));
 
         let fieldNamesStr = activeFields.map(f => f.name).reduce(
             (a: string, b: string, i, array) => a + (i < array.length - 1 ? ', ' : ' and ') + b, "")
@@ -216,7 +213,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
             input_tables: baseTables.map(t => {return { name: t.id.replace(/\.[^/.]+$/ , ""), rows: t.rows }}),
             new_fields: activeBaseFields.map(f => { return {name: f.name} }),
             extra_prompt: prompt,
-            model: activeModel,
+            // model: activeModel,
             max_repair_attempts: config.maxRepairAttempts
         }) 
         let engine = getUrls().SERVER_DERIVE_DATA_URL;
@@ -229,7 +226,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
                 new_fields: activeBaseFields.map(f => { return {name: f.name} }),
                 extra_prompt: prompt,
                 additional_messages: triggerTable.derive?.dialog,
-                model: activeModel,
+                // model: activeModel,
                 max_repair_attempts: config.maxRepairAttempts
             }) 
             engine = getUrls().SERVER_DERIVE_DATA_URL;
@@ -262,7 +259,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
 
         setReformulteRunning(true);
     
-        fetch(engine, {...message, signal: controller.signal })
+        fetchData(engine, {...message, signal: controller.signal })
             .then((response) => response.json())
             .then((data) => {
 
@@ -397,6 +394,9 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
                         "detail": error.message
                     }));
                 }
+            }).finally(() => {
+                // clear the timeout
+                clearTimeout(timeoutId);
             });
     }
 
@@ -432,7 +432,7 @@ export const EncodingShelfThread: FC<EncodingShelfThreadProps> = function ({ cha
 
         let previousActiveFields = new Set(i == 0 ? [] : extractActiveFields(triggers[i - 1]))
         let currentActiveFields = new Set(extractActiveFields(trigger))
-        let fieldsIdentical = _.isEqual(previousActiveFields, currentActiveFields)
+        let fieldsIdentical = isEqual(previousActiveFields, currentActiveFields)
 
         return  <Box 
             key={`${trigger.tableId}-trigger-card`}

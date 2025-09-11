@@ -17,8 +17,16 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, dataFormulatorReducer)
 
-let store = configureStore({
+export const persistedStore = configureStore({
     reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+    }),
+})
+
+let store = configureStore({
+    reducer: dataFormulatorReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: false,

@@ -3,15 +3,14 @@
 
 import React from 'react';
 
-import {
-    Box,
-    Button,
-    Typography,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 import embed from 'vega-embed';
 
 import '../scss/VisualizationView.scss';
+import { fetchData } from '../app/utils';
 
 export interface TestPanelProps {
 }
@@ -59,7 +58,7 @@ export default class TestPanel extends React.Component<TestPanelProps, TestPanel
     }
 
     private testStreamingChart = () => {
-        fetch('http://127.0.0.1:5000/stream')
+        fetchData('http://127.0.0.1:8000/stream')
             // Retrieve its body as ReadableStream
             .then((response) => response.body)
             // Create a gray-scaled PNG stream out of the original

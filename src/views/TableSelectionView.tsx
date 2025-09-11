@@ -9,14 +9,25 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { alpha, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Divider, 
-         IconButton, Input, CircularProgress, LinearProgress, Paper, TextField, useTheme, 
-         Card} from '@mui/material';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import { alpha, useTheme } from '@mui/material/styles';
 import { CustomReactTable } from './ReactTable';
 import { DictTable } from "../components/ComponentType";
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 import { createTableFromFromObjectArray, createTableFromText, loadTextDataWrapper, loadBinaryDataWrapper } from '../data/utils';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,10 +35,7 @@ import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CancelIcon from '@mui/icons-material/Cancel';
-
-import ReactDiffViewer from 'react-diff-viewer'
 
 import { DataFormulatorState, dfActions, dfSelectors, fetchFieldSemanticType } from '../app/dfSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -173,7 +181,7 @@ export const TableSelectionDialog: React.FC<{ buttonElement: any }> = function T
 
     React.useEffect(() => {
         // Show a loading animation/message while loading
-        fetch(`${getUrls().VEGA_DATASET_LIST}`)
+        fetchData(`${getUrls().VEGA_DATASET_LIST}`)
             .then((response) => response.json())
             .then((result) => {
                 let tableChallenges : TableChallenges[] = result.map((info: any) => {
@@ -216,7 +224,7 @@ export const TableSelectionDialog: React.FC<{ buttonElement: any }> = function T
                             // request public datasets from the server
                         console.log(tableChallenges);
                         console.log(`${getUrls().VEGA_DATASET_REQUEST_PREFIX}${tableChallenges.table.id}`)
-                        fetch(`${getUrls().VEGA_DATASET_REQUEST_PREFIX}${tableChallenges.table.id}`)
+                        fetchData(`${getUrls().VEGA_DATASET_REQUEST_PREFIX}${tableChallenges.table.id}`)
                             .then((response) => {
                                 return response.text()
                             })
@@ -299,10 +307,10 @@ export const TableUploadDialog: React.FC<TableUploadDialogProps> = ({ buttonElem
                            file.name.endsWith('.xls')) {
                     // Handle Excel files
                     const reader = new FileReader();
-                    reader.onload = (e) => {
+                    reader.onload = async (e) => {
                         const arrayBuffer = e.target?.result as ArrayBuffer;
                         if (arrayBuffer) {
-                            let tables = loadBinaryDataWrapper(uniqueName, arrayBuffer);
+                            let tables = await loadBinaryDataWrapper(uniqueName, arrayBuffer);
                             for (let table of tables) {
                                 dispatch(dfActions.loadTable(table));
                                 dispatch(fetchFieldSemanticType(table));
@@ -383,7 +391,7 @@ export const TableURLDialog: React.FC<TableURLDialogProps> = ({ buttonElement, d
         // Get the last part of the URL, which should be the file name with extension
         const tableName = parts[parts.length - 1];
 
-        fetch(tableURL)
+        fetchData(tableURL)
         .then(res => res.text())
         .then(content => {
             let table : undefined | DictTable = undefined;
@@ -444,7 +452,7 @@ export const TableURLDialog: React.FC<TableURLDialogProps> = ({ buttonElement, d
 
 export const TableCopyDialogV2: React.FC<TableCopyDialogProps> = ({ buttonElement, disabled }) => {
 
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [tableName, setTableName] = useState<string>("");
@@ -505,7 +513,7 @@ export const TableCopyDialogV2: React.FC<TableCopyDialogProps> = ({ buttonElemen
         // Get the last part of the URL, which should be the file name with extension
         const tableName = parts[parts.length - 1];
 
-        fetch(url)
+        fetchData(url)
         .then(res => res.text())
         .then(content => {
             setTableName(tableName);
@@ -527,11 +535,11 @@ export const TableCopyDialogV2: React.FC<TableCopyDialogProps> = ({ buttonElemen
                 content_type: tableContentType,
                 raw_data: tableContent,
                 image_cleaning_instruction: imageCleaningInstr,
-                model: activeModel
+                // model: activeModel
             }),
         };
 
-        fetch(getUrls().CLEAN_DATA_URL, message)
+        fetchData(getUrls().CLEAN_DATA_URL, message)
             .then((response) => response.json())
             .then((data) => {
                 setCleaningInProgress(false);

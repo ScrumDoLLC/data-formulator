@@ -12,35 +12,28 @@ import {
     fetchFieldSemanticType,
 } from './dfSlice'
 
-import blue from '@mui/material/colors/blue';
-
-import _ from 'lodash';
-
-import {
-    Button,
-    Tooltip,
-    Typography,
-    Box,
-    Toolbar,
-    Input,
-    Divider,
-    DialogTitle,
-    Dialog,
-    DialogContent,
-    Avatar,
-    Link,
-    DialogContentText,
-    DialogActions,
-    ToggleButtonGroup,
-    ToggleButton,
-    Menu,
-    MenuItem,
-    TextField,
-} from '@mui/material';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Input from '@mui/material/Input';
+import Divider from '@mui/material/Divider';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import Link from '@mui/material/Link';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 
 
 import MuiAppBar from '@mui/material/AppBar';
-import { createTheme, styled, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import { DataFormulatorFC } from '../views/DataFormulator';
@@ -54,7 +47,7 @@ import {
 } from "react-router-dom";
 import { About } from '../views/About';
 import { MessageSnackbar } from '../views/MessageSnackbar';
-import { appConfig, assignAppConfig, getUrls, PopupConfig } from './utils';
+import { appConfig, assignAppConfig, fetchData, PopupConfig } from './utils';
 import { DictTable } from '../components/ComponentType';
 import { AppDispatch } from './store';
 import { ActionSubscription, subscribe, unsubscribe } from './embed';
@@ -439,7 +432,7 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
     }, []);
 
     useEffect(() => {
-        fetch('/.auth/me')
+        fetchData('/.auth/me')
             .then(function (response) { return response.json(); })
             .then(function (result) {
                 if (Array.isArray(result) && result.length > 0) {
@@ -463,31 +456,6 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
         document.title = toolName;
         dispatch(fetchAvailableModels());
     }, []);
-
-    let theme = createTheme({
-        typography: {
-            fontFamily: [
-                "Arial",
-                "Roboto",
-                "Helvetica Neue",
-                "sans-serif"
-            ].join(",")
-        },
-        palette: {
-            primary: {
-                main: blue[700]
-            },
-            derived: {
-                main: "rgb(255,215,0)", // gold
-            },
-            custom: {
-                main: "rgb(255, 160, 122)", //lightsalmon
-            },
-            warning: {
-                main: '#bf5600', // New accessible color, original (#ed6c02) has insufficient color contrast of 3.11
-            },
-        },
-    });
 
     let switchers = (
         <Box sx={{ display: "flex" }} key="switchers">
@@ -577,7 +545,7 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
         }
     ]);
 
-    let app =
+    return (
         <Box sx={{ 
             position: 'absolute',
             top: 0,
@@ -600,12 +568,7 @@ export const AppFC: FC<AppFCProps> = function AppFC(appProps) {
                 <RouterProvider router={router} />
                 <MessageSnackbar />
             </Box>
-        </Box>;
-
-    return (
-        <ThemeProvider theme={theme}>
-            {app}
-        </ThemeProvider>
+        </Box>
     );
 }
 

@@ -11,30 +11,26 @@ import '../scss/ConceptShelf.scss';
 import Prism from 'prismjs'
 import 'prismjs/components/prism-javascript' // Language
 import 'prismjs/themes/prism.css'; //Example style, you can use another
-import prettier from "prettier";
-import parserBabel from 'prettier/parser-babel';
+import beautify from "js-beautify";
 import { useTheme } from '@mui/material/styles';
 
-import {
-    Chip,
-    Card,
-    Box,
-    CardContent,
-    Typography,
-    IconButton,
-    Button,
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    SelectChangeEvent,
-    MenuItem,
-    Checkbox,
-    Menu,
-    ButtonGroup,
-    Tooltip,
-    styled,
-    LinearProgress} from '@mui/material';
+import Chip from '@mui/material/Chip';
+import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
+import Menu from '@mui/material/Menu';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -52,11 +48,10 @@ import { DataFormulatorState, dfActions, dfSelectors } from '../app/dfSlice';
 import Editor from 'react-simple-code-editor';
 
 import { DisambiguationDialog, simpleTableView } from './DisambiguationDialog';
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 import { deriveTransformExamplesV2, getDomains, getIconFromType, processCodeCandidates } from './ViewUtils';
 
 
-import _ from 'lodash';
 import { DictTable } from '../components/ComponentType';
 
 export interface ConceptCardProps {
@@ -107,7 +102,7 @@ export const ConceptCard: FC<ConceptCardProps> = function ConceptCard({ field })
     let notInFocusedTable : boolean;
     if (field.source == "derived") {
         let parentConceptNames = (field.transform as ConceptTransformation)
-                .parentIDs.map((parentID) => conceptShelfItems.find(c => c.id == parentID) as FieldItem).map(f => f.name);
+                .parentIDs.map((parentID) => conceptShelfItems.find(c => c.id == parentID) as FieldItem).map(f => f?.name);
         notInFocusedTable = parentConceptNames.some(name => !focusedChartRefTable?.names.includes(name));
     } else {
         notInFocusedTable = !focusedChartRefTable?.names.includes(field.name);
@@ -259,10 +254,12 @@ export const ConceptCard: FC<ConceptCardProps> = function ConceptCard({ field })
     return cardComponent;
 }
 
-let formatFunc = (jsCode: string) => prettier.format(jsCode, {
-    parser: "babel",
-    plugins: [parserBabel],
-    printWidth: 40
+let formatFunc = (jsCode: string) => beautify.js(jsCode, {
+    indent_size: 2,
+    max_preserve_newlines: 2,
+    wrap_line_length: 40,
+    end_with_newline: false,
+    space_in_empty_paren: true,
 }).trim();
 
 export interface ConceptFormProps {
@@ -665,7 +662,7 @@ export interface CodexDialogBoxProps {
 export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({ 
     initialDescription, inputFieldsInfo, inputData, outputName, callWhenSubmit, handleProcessResults, size="small" }) {
 
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
 
     let [description, setDescription] = useState(initialDescription);
     let [requestTimeStamp, setRequestTimeStamp] = useState<number>(0);
@@ -692,7 +689,7 @@ export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({
                         input_fields: inputFieldsInfo,
                         input_data: {name: inputData['id'], rows: inputData['rows']},
                         output_name: outputName,
-                        model: activeModel
+                        // model: activeModel
                     }),
                 };
 
@@ -702,7 +699,7 @@ export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({
                 const controller = new AbortController()
                 const timeoutId = setTimeout(() => controller.abort(), 20000)
 
-                fetch(getUrls().DERIVE_CONCEPT_URL, {...message, signal: controller.signal })
+                fetchData(getUrls().DERIVE_CONCEPT_URL, {...message, signal: controller.signal })
                     .then((response) => response.json())
                     .then((data) => {
                         console.log("---model output")
@@ -717,6 +714,9 @@ export const CodexDialogBox: FC<CodexDialogBoxProps> = function ({
                         handleProcessResults(status, codeList);
                     }).catch((error) => {
                         handleProcessResults("error", []);
+                    }).finally(() => {
+                        // clear the timeout
+                        clearTimeout(timeoutId);
                     });
             }}>
             <PrecisionManufacturingIcon />

@@ -3,38 +3,33 @@
 
 import { FC, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { DataFormulatorState, dfActions, dfSelectors, fetchCodeExpl, fetchFieldSemanticType, generateFreshChart } from '../app/dfSlice';
+import { DataFormulatorState, dfActions, fetchCodeExpl, fetchFieldSemanticType, generateFreshChart } from '../app/dfSlice';
 
-import {
-    Box,
-    Typography,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    ListSubheader,
-    ListItemIcon,
-    ListItemText,
-    IconButton,
-    Tooltip,
-    TextField,
-    Stack,
-    Card,
-    Chip,
-    Autocomplete,
-    Menu,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
+import Menu from '@mui/material/Menu';
 
 import React from 'react';
 
-import { Channel, EncodingItem, ConceptTransformation, Chart, FieldItem, Trigger, duplicateChart } from "../components/ComponentType";
-
-import _ from 'lodash';
+import { Channel, ConceptTransformation, Chart, FieldItem, Trigger, duplicateChart } from "../components/ComponentType";
 
 import '../scss/EncodingShelf.scss';
 import { createDictTable, DictTable } from "../components/ComponentType";
 
-import { getUrls, resolveChartFields } from '../app/utils';
+import { fetchData, getUrls, resolveChartFields } from '../app/utils';
 import { EncodingBox } from './EncodingBox';
 
 import { ChannelGroups, CHART_TEMPLATES, getChartTemplate } from '../components/ChartTemplates';
@@ -42,13 +37,11 @@ import { getDataTable } from './VisualizationView';
 import TableRowsIcon from '@mui/icons-material/TableRowsOutlined';
 import ChangeCircleOutlinedIcon from '@mui/icons-material/ChangeCircleOutlined';
 import AddIcon from '@mui/icons-material/Add';
-import CheckIcon from '@mui/icons-material/Check';
 
 import { findBaseFields } from './ViewUtils';
 import { AppDispatch } from '../app/store';
 import PrecisionManufacturing from '@mui/icons-material/PrecisionManufacturing';
 import { Type } from '../data/types';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 
 // Property and state of an encoding shelf
@@ -314,7 +307,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
 
     let existMultiplePossibleBaseTables = tables.filter(t => t.derive == undefined || t.anchored).length > 1;
 
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
 
     let [prompt, setPrompt] = useState<string>(trigger?.instruction || "");
 
@@ -399,12 +392,12 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                 dispatch(dfActions.changeChartRunningStatus({chartId, status: false}));
                 dispatch(dfActions.clearUnReferencedTables());
             }, 400);
-            dispatch(dfActions.setVisPaneSize(640));
+            // dispatch(dfActions.setVisPaneSize(640));
             return
         }
 
         dispatch(dfActions.clearUnReferencedTables());
-        dispatch(dfActions.setVisPaneSize(640));
+        // dispatch(dfActions.setVisPaneSize(640));
         //handleRunSynthesisStream(example);
 
         let fieldNamesStr = activeFields.map(f => f.name).reduce(
@@ -419,7 +412,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
             input_tables: actionTables.map(t => {return { name: t.id.replace(/\.[^/.]+$/ , ""), rows: t.rows }}),
             new_fields: activeBaseFields.map(f => { return {name: f.name} }),
             extra_prompt: instruction,
-            model: activeModel,
+            // model: activeModel,
             max_repair_attempts: config.maxRepairAttempts
         }) 
         let engine = getUrls().SERVER_DERIVE_DATA_URL;
@@ -440,7 +433,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                         input_tables: actionTables.map(t => {return { name: t.id.replace(/\.[^/.]+$/ , ""), rows: t.rows }}),
                         new_fields: activeBaseFields.map(f => { return {name: f.name} }),
                         extra_prompt: instruction,
-                        model: activeModel,
+                        // model: activeModel,
                         additional_messages: additionalMessages,
                         max_repair_attempts: config.maxRepairAttempts
                     });
@@ -453,7 +446,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                         output_fields: activeBaseFields.map(f => { return {name: f.name} }),
                         dialog: currentTable.derive?.dialog,
                         new_instruction: instruction,
-                        model: activeModel,
+                        // model: activeModel,
                         max_repair_attempts: config.maxRepairAttempts
                     })
                     engine = getUrls().SERVER_REFINE_DATA_URL;
@@ -475,7 +468,7 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), config.formulateTimeoutSeconds * 1000);
     
-        fetch(engine, {...message, signal: controller.signal })
+        fetchData(engine, {...message, signal: controller.signal })
             .then((response) => response.json())
             .then((data) => {
                 
@@ -654,6 +647,9 @@ export const EncodingShelfCard: FC<EncodingShelfCardProps> = function ({ chartId
                         "detail": error.message
                     }));
                 }
+            }).finally(() => {
+                // clear the timeout
+                clearTimeout(timeoutId);
             });
     }
     let defaultInstruction = chart.chartType == "Auto" ? "" : "" // `the output data should contain fields ${activeBaseFields.map(f => `${f.name}`).join(', ')}`

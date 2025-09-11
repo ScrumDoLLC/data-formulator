@@ -3,31 +3,26 @@
 
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-import {
-    Box,
-    Button,
-    Divider,
-    Icon,
-    IconButton,
-    Stack,
-    Tooltip,
-    Typography,
-    ListItemIcon,
-    ListItemText,
-    MenuItem,
-    LinearProgress,
-    Card,
-    Collapse,
-    ListSubheader,
-    Menu,
-    CardContent,
-    Slider,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import LinearProgress from '@mui/material/LinearProgress';
+import Card from '@mui/material/Card';
+import Collapse from '@mui/material/Collapse';
+import ListSubheader from '@mui/material/ListSubheader';
+import Menu from '@mui/material/Menu';
+import CardContent from '@mui/material/CardContent';
+import Slider from '@mui/material/Slider';
 
 import ButtonGroup from '@mui/material/ButtonGroup';
-
-
-import { styled } from "@mui/material/styles";
 
 import embed from 'vega-embed';
 import AnimateOnChange from 'react-animate-on-change'
@@ -53,7 +48,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 import { CHART_TEMPLATES, getChartTemplate } from '../components/ChartTemplates';
-import { findBaseFields } from './ViewUtils';
+import { findBaseFields, getVegaFormattedTableData } from './ViewUtils';
 
 import Prism from 'prismjs'
 import 'prismjs/components/prism-python' // Language
@@ -157,9 +152,12 @@ export let CodeBox : FC<{code: string, language: string}> = function  CodeBox({ 
           <code className={`language-${language}`} >{code}</code>
         </pre>
     );
-  }
+}
 
 export const chartAvailabilityCheck = (encodingMap: EncodingMap, conceptShelfItems: FieldItem[], data: any[]) => {
+    if (!encodingMap || !conceptShelfItems?.length || !data?.length) {
+        return [false, []];
+    }
     let unfilledFields = [];
     let dataFields = [...Object.keys(data[0])];
 
@@ -231,7 +229,10 @@ const BaseChartCreationMenu: FC<{tableId: string; buttonElement: any}> = functio
 
 export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
             handleUpdateCandidates: (chartId: string, tables: DictTable[]) => void,
-    }> = function ChartEditorFC({ cachedCandidates, handleUpdateCandidates }) {
+            showDuplicateButton?: boolean,
+            showSaveButton?: boolean
+            showDeleteButton?: boolean
+    }> = function ChartEditorFC({ cachedCandidates, handleUpdateCandidates, showDuplicateButton = false, showSaveButton = false, showDeleteButton = false }) {
 
     const componentRef = useRef<HTMLHeadingElement>(null);
 
@@ -248,8 +249,6 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
     const dispatch = useDispatch();
 
     const conceptShelfItems = useSelector((state: DataFormulatorState) => state.conceptShelfItems);
-
-    let derivedFields = conceptShelfItems.filter(f => f.source == "derived");
 
     const [candidatesViewAnchorEl, setCandidatesViewAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -281,10 +280,9 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
         }
     }, [candidates])
 
-    let codeExpl = table.derive?.codeExpl || "";
+    let codeExpl = table?.derive?.codeExpl || "";
 
-    let toDeriveFields = derivedFields.filter(f => f.name != "").filter(f => findBaseFields(f, conceptShelfItems).every(f2 => table.names.includes(f2.name)))
-    let focusedExtTable = baseTableToExtTable(JSON.parse(JSON.stringify(table.rows)), toDeriveFields, conceptShelfItems);
+    let focusedExtTable = getVegaFormattedTableData(table, conceptShelfItems)
 
     let createChartElement = (chart: Chart, extTable: any[], id: string) => {
         let chartTemplate = getChartTemplate(chart.chartType);
@@ -360,7 +358,8 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
                             </Box>;
 
     
-    let saveButton = focusedChart.saved ?
+    let saveButton = showSaveButton ? (
+        focusedChart.saved ?
         (
             <IconButton size="large" key="save-btn" sx={{ textTransform: "none" }}
                 onClick={() => {
@@ -385,22 +384,24 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
                     <StarBorderIcon  />
                 </IconButton>
             </Tooltip>
-        );
+        )
+    ) : null;
 
-    let duplicateButton = <Tooltip title="duplicate the chart">
-        <IconButton color="primary" key="duplicate-btn" size="small" sx={{ textTransform: "none" }}
-        disabled={focusedChart.intermediate != undefined}
-        onClick={() => {
-            // trackEvent('save-chart', { 
-            //     vlspec: focusedChartVgSpec,
-            //     data_sample: focusedExtTable.slice(0, 100)
-            // });
-            dispatch(dfActions.duplicateChart(focusedChart.id));
-        }}>
-        
-            <ContentCopyIcon  />
-        </IconButton>
-    </Tooltip>
+    let duplicateButton = showDuplicateButton ? (
+        <Tooltip title="duplicate the chart">
+            <IconButton color="primary" key="duplicate-btn" size="small" sx={{ textTransform: "none" }}
+            disabled={focusedChart.intermediate != undefined}
+            onClick={() => {
+                // trackEvent('save-chart', {
+                //     vlspec: focusedChartVgSpec,
+                //     data_sample: focusedExtTable.slice(0, 100)
+                // });
+                dispatch(dfActions.duplicateChart(focusedChart.id));
+            }}>
+                <ContentCopyIcon  />
+            </IconButton>
+        </Tooltip>
+    ) : null;
 
     let createNewChartButton =  <BaseChartCreationMenu tableId={focusedChart.tableRef} buttonElement={
             <Tooltip title="create a new chart">
@@ -408,14 +409,14 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
             </Tooltip>} />
 
 
-    let deleteButton = (
+    let deleteButton = showDeleteButton ? (
         <Tooltip title="delete" key="delete-btn-tooltip">
             <IconButton color="warning" size="small" sx={{ textTransform: "none" }}  disabled={focusedChart.intermediate != undefined}
                         onClick={() => { handleDeleteChart() }}>
                 <DeleteIcon />
             </IconButton>
         </Tooltip>
-    );
+    ): null;
 
     let transformCode = "";
     if (table.derive?.code) {
@@ -636,7 +637,7 @@ export const ChartEditorFC: FC<{  cachedCandidates: DictTable[],
         //                handleUpdateCandidates={handleUpdateCandidates} handleSetSynthesisStatus={handleSetSynthesisStatus} />
         <Collapse 
             key='encoding-shelf'
-            collapsedSize={48} in={!collapseEditor} orientation='horizontal' 
+            collapsedSize={30} in={!collapseEditor} orientation='horizontal' 
             sx={{position: 'relative'}}>
             <Box sx={{display: 'flex', flexDirection: 'row', height: '100%'}}>
                 <Tooltip placement="left" title={collapseEditor ? "open editor" : "hide editor"}>
@@ -747,10 +748,7 @@ export const VisualizationViewFC: FC<VisPanelProps> = function VisualizationView
         let chartElements = charts.filter(c => !c.intermediate).map((chart, index) => {
 
             let table = getDataTable(chart, tables, charts, conceptShelfItems);
-    
-            let toDeriveFields = derivedFields.filter(f => f.name != "").filter(f => findBaseFields(f, conceptShelfItems).every(f2 => table.names.includes(f2.name)))
-            let extTable = baseTableToExtTable(JSON.parse(JSON.stringify(table.rows)), toDeriveFields, conceptShelfItems);
-
+            let extTable = getVegaFormattedTableData(table, conceptShelfItems)
             let chartTemplate = getChartTemplate(chart.chartType);
 
             let setIndexFunc = () => {

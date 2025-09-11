@@ -10,20 +10,12 @@ import {
     dfActions,
 } from '../app/dfSlice'
 
-import _ from 'lodash';
-
 import SplitPane from "react-split-pane";
-import {
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
 
-    Typography,
-    Box,
-    Tooltip,
-    Button,
-} from '@mui/material';
-
-
-
-import { styled } from '@mui/material/styles';
 
 import { FreeDataViewFC } from './DataView';
 import { VisualizationViewFC } from './VisualizationView';
@@ -40,11 +32,14 @@ import { DataThread } from './DataThread';
 
 import dfLogo from '../assets/df-logo.png';
 import exampleImageTable from "../assets/example-image-table.png";
-import { ModelSelectionButton } from './ModelSelectionDialog';
 
 //type AppProps = ConnectedProps<typeof connector>;
+interface DataFormulatorFCProps {
+    showDataThread?: boolean;
+    disableDataUpload?: boolean;
+}
 
-export const DataFormulatorFC = ({ }) => {
+export const DataFormulatorFC = ({ showDataThread = true, disableDataUpload }: DataFormulatorFCProps) => {
 
     const displayPanelSize = useSelector((state: DataFormulatorState) => state.displayPanelSize);
     const visPaneSize = useSelector((state: DataFormulatorState) => state.visPaneSize);
@@ -64,7 +59,15 @@ export const DataFormulatorFC = ({ }) => {
     )
 
     const visPaneMain = (
-        <Box sx={{ width: "100%", overflow: "hidden", display: "flex", flexDirection: "row" }}>
+        <Box
+            sx={{
+                width: "100%",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "row",
+                height: `calc(100vh - 88px - ${visPaneSize}px)`
+            }}
+        >
             <VisualizationViewFC />
         </Box>);
 
@@ -72,9 +75,12 @@ export const DataFormulatorFC = ({ }) => {
 
     const visPane = (// @ts-ignore
         <SplitPane split="horizontal"
-            minSize={100} size={visPaneSize}
+            minSize={26}
+            primary="second"
+            size={visPaneSize}
             className={'vis-split-pane'}
             style={{}}
+            pane1Style={{display: "flex", alignItems: 'center'}}
             pane2Style={{overflowY: "hidden"}}
             onDragFinished={size => { dispatch(dfActions.setVisPaneSize(size)) }}>
             {visPaneMain}
@@ -92,28 +98,26 @@ export const DataFormulatorFC = ({ }) => {
             style={{width: "100%", height: '100%', position: 'relative'}}
             onDragFinished={size => { dispatch(dfActions.setDisplayPanelSize(size)) }}>
             <Box sx={{display: 'flex', width: `100%`, height: '100%'}}>
-                {tables.length > 0 ? 
+                {showDataThread && tables.length > 0 ? 
                         <DataThread />   //<Carousel />
                         : ""} 
                     {visPane}
             </Box>
             <Box className="data-editor">
                 {conceptEncodingPanel}
-                {/* <InfoPanelFC $tableRef={$tableRef}/> */}
             </Box>
         </SplitPane>);
 
     const fixedSplitPane = ( 
         <Box sx={{display: 'flex', flexDirection: 'row', height: '100%'}}>
             <Box sx={{display: 'flex', width: `calc(100% - ${280}px)`}}>
-            {tables.length > 0 ? 
+            {showDataThread && tables.length > 0 ? 
                     <DataThread />   //<Carousel />
                     : ""} 
                 {visPane}
             </Box>
             <Box className="data-editor" sx={{width: 280, borderLeft: '1px solid lightgray'}}>
                 {conceptEncodingPanel}
-                {/* <InfoPanelFC $tableRef={$tableRef}/> */}
             </Box>
         </Box>);
 
@@ -151,31 +155,29 @@ Totals (7 entries)	5	5	5	15
                 href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
     </Box>;
 
-    let modelSelectionDialogBox = <Box sx={{width: '100vw'}}>
-        <Box sx={{paddingTop: "8%", display: "flex", flexDirection: "column", textAlign: "center"}}>
-            <Box component="img" sx={{  width: 256, margin: "auto" }} alt="" src={dfLogo} />
-            <Typography variant="h3" sx={{marginTop: "20px"}}>
-                {toolName}
-            </Typography>
-            <Typography variant="h4">
-                Let's <ModelSelectionButton />
-            </Typography>
-            <Typography variant="body1">Specify an OpenAI or Azure OpenAI endpoint to run {toolName}.</Typography>
-        </Box>
-        <Button size="small" color="inherit" 
-                sx={{position: "absolute", color:'darkgray', bottom: 0, right: 0, textTransform: 'none'}} 
-                target="_blank" rel="noopener noreferrer" 
-                href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
-    </Box>;
+    // let modelSelectionDialogBox = <Box sx={{width: '100vw'}}>
+    //     <Box sx={{paddingTop: "8%", display: "flex", flexDirection: "column", textAlign: "center"}}>
+    //         <Box component="img" sx={{  width: 256, margin: "auto" }} alt="" src={dfLogo} />
+    //         <Typography variant="h3" sx={{marginTop: "20px"}}>
+    //             {toolName}
+    //         </Typography>
+    //         <Typography variant="h4">
+    //             Let's <ModelSelectionButton />
+    //         </Typography>
+    //         <Typography variant="body1">Specify an OpenAI or Azure OpenAI endpoint to run {toolName}.</Typography>
+    //     </Box>
+    //     <Button size="small" color="inherit" 
+    //             sx={{position: "absolute", color:'darkgray', bottom: 0, right: 0, textTransform: 'none'}} 
+    //             target="_blank" rel="noopener noreferrer" 
+    //             href="https://privacy.microsoft.com/en-US/data-privacy-notice">view data privacy notice</Button>
+    // </Box>;
 
-
-    console.log("selected model?")
-    console.log(selectedModelId)
     
     return (
-        <Box sx={{ display: 'block', width: "100%", height: 'calc(100% - 49px)' }}>
+        <Box sx={{ display: 'block', width: "100%", height: '100%' }}>
             <DndProvider backend={HTML5Backend}>
-                {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? fixedSplitPane : dataUploadRequestBox)} 
+                {/* {selectedModelId == undefined ? modelSelectionDialogBox : (tables.length > 0 ? fixedSplitPane : dataUploadRequestBox)}  */}
+                {tables.length > 0 || disableDataUpload ? fixedSplitPane : dataUploadRequestBox} 
             </DndProvider>
         </Box>);
 }

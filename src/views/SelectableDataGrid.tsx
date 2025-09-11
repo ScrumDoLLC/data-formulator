@@ -9,30 +9,37 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Box } from '@mui/system';
 
-import { useTheme } from '@mui/material/styles';
-import { alpha, Collapse, Divider, Paper, ToggleButton, Tooltip } from "@mui/material";
+import { useTheme, alpha } from '@mui/material/styles';
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import ToggleButton from "@mui/material/ToggleButton";
+import Tooltip from "@mui/material/Tooltip";
 
 import { TSelectableItemProps, createSelectable } from 'react-selectable-fast';
 import { SelectableGroup } from 'react-selectable-fast';
 import { Type } from '../data/types';
 import { getIconFromType } from './ViewUtils';
 
-import { IconButton, InputAdornment, OutlinedInput, TableSortLabel, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
 
-import _ from 'lodash';
+import { debounce, sortedIndex, uniq, without } from 'lodash-es';
+
 import { FieldSource } from '../components/ComponentType';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { dfActions, dfSelectors } from '../app/dfSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUrls } from '../app/utils';
+import { useDispatch } from 'react-redux';
+import { fetchData, getUrls } from '../app/utils';
 
 interface SelectableCellProps {
     align: any;
@@ -142,7 +149,7 @@ function getComparator<Key extends keyof any>(
 export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, tableName, columnDefs, $tableRef, onSelectionFinished }) => {
 
     const [footerActionExpand, setFooterActionExpand] = React.useState<boolean>(false);
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     
     const [orderBy, setOrderBy] = React.useState<string | undefined>(undefined);
     const [order, setOrder] = React.useState<'asc' | 'desc'>('asc');
@@ -170,7 +177,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
 
     const onClickCell = (event: any, rowIndex: number, colIndex: number) => {
         // console.log('click cell');
-        // console.log(_.without(selectedCells, [rowIndex, colIndex]));
+        // console.log(without(selectedCells, [rowIndex, colIndex]));
         // console.log(event);
         for (let i = 0; i < selectedCells.length; i++) {
             const [r, c] = selectedCells[i];
@@ -180,11 +187,11 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                 return;
             }
         }
-        selectedCells.splice(_.sortedIndex(selectedCells, [rowIndex, colIndex]), 0, [rowIndex, colIndex]);
+        selectedCells.splice(sortedIndex(selectedCells, [rowIndex, colIndex]), 0, [rowIndex, colIndex]);
         setSelectedCells([...selectedCells]);
     }
 
-    const TableComponents = {
+    const TableComponents: any = {
         Scroller: TableContainer,
         Table: Table,
         TableHead: (props: any) => <TableHead {...props} className='table-header-container' />,
@@ -201,7 +208,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
         setSelectedColumnNames([]);
     }
 
-    const debouncedSearchHandler = React.useCallback(_.debounce((value: string) => {
+    const debouncedSearchHandler = React.useCallback(debounce((value: string) => {
         setSearchValue(value);
     }, 300), [searchText]);
 
@@ -211,10 +218,10 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
 
 
     const handleSelectionFinish = (selected: any[]) => {
-        let newSelectedCells = _.uniq(selected.map(x => x.props.indices));
+        let newSelectedCells = uniq(selected.map(x => x.props.indices));
         setSelectedCells(newSelectedCells);
         let values = selected.map(x => x.props.value);
-        let columns = _.uniq(selected.map(x => x.props.column.id));
+        let columns = uniq(selected.map(x => x.props.column.id));
 
         setSelectedColumnNames(columns);
         onSelectionFinished(columns, values);
@@ -288,9 +295,9 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', },
                             body: JSON.stringify({
-                                token: Date.now(),
+                                // token: Date.now(),
                                 input_data: {name: tableName, rows: rows},
-                                model: activeModel
+                                // model: activeModel
                             }),
                         };
         
@@ -298,7 +305,7 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                         const controller = new AbortController()
                         const timeoutId = setTimeout(() => controller.abort(), 20000)
     
-                        fetch(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
+                        fetchData(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
                             .then((response) => response.json())
                             .then((data) => {
                                 console.log("---model output")
@@ -312,6 +319,9 @@ export const SelectableDataGrid: React.FC<SelectableDataGridProps> = ({ rows, ta
                                     console.log(codeList)
                                 }
                             }).catch((error) => {
+                            }).finally(() => {
+                                // clear the timeout
+                                clearTimeout(timeoutId);
                             });
                     }
                 }

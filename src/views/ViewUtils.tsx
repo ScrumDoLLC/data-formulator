@@ -2,17 +2,16 @@
 // Licensed under the MIT License.
 
 import React from "react";
-import ts from "typescript";
-import { runCodeOnInputListsInVM } from "../app/utils";
+import { baseTableToExtTable, runCodeOnInputListsInVM } from "../app/utils";
 import { ConceptTransformation, FieldItem } from "../components/ComponentType";
 import { Type } from "../data/types";
 import { BooleanIcon, NumericalIcon, StringIcon, DateIcon, UnknownIcon } from '../icons';
 
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
-import prettier from "prettier";
-import parserBabel from 'prettier/parser-babel';
+import beautify from "js-beautify";
 import { DictTable } from '../components/ComponentType';
+import { transform } from "sucrase";
 
 // from a list of potential tables, extract domain of a given basic or custom fields
 export const getDomains = (field: FieldItem, tables: DictTable[]) : any[][] => {
@@ -38,7 +37,7 @@ export const deriveTransformExamplesV2 = (code: string, parentIDs: string[], inp
     let func : any = undefined;
     let inputRequiresColumnList = false;
     try {
-        func = eval(ts.transpile(code));
+        func = transform(code, {transforms: ["typescript"]}).code;
         // prepare the function
         if (func.length == parentConcepts.length * 2 + 1) {
             // we need to retain domain without dedup so that the example table looks right
@@ -82,10 +81,12 @@ export const processCodeCandidates = (rawCodeList: string[], parentIDs: string[]
     // do some quick parse check
     let tempCodeList = rawCodeList.filter(code => {
         try {
-            prettier.format(code, {
-                parser: "babel",
-                plugins: [parserBabel]
-            })
+            beautify.js(code, {
+                indent_size: 2,
+                max_preserve_newlines: 2,
+                end_with_newline: false,
+                space_in_empty_paren: true,
+            }).trim();
             return true;
         } catch {
             return false;
@@ -165,3 +166,10 @@ export const getIconFromType = (t: Type | undefined): JSX.Element => {
     }
     return <UnknownIcon fontSize="inherit" />;
 };
+
+export const getVegaFormattedTableData = (table: any, conceptShelfItems: FieldItem[]) => {
+    let derivedFields = conceptShelfItems.filter(f => f.source == "derived");
+    let toDeriveFields = derivedFields.filter(f => f.name != "").filter(f => findBaseFields(f, conceptShelfItems).every(f2 => table.names.includes(f2.name)))
+    let extTable = baseTableToExtTable(JSON.parse(JSON.stringify(table.rows)), toDeriveFields, conceptShelfItems);
+    return extTable
+}

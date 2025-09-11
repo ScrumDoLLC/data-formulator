@@ -9,7 +9,7 @@ import { Message } from '../views/MessageSnackbar';
 import { getChartTemplate, getChartChannels } from "../components/ChartTemplates"
 import { getDataTable } from '../views/VisualizationView';
 import { findBaseFields } from '../views/ViewUtils';
-import { adaptChart, getTriggers, getUrls } from './utils';
+import { adaptChart, fetchData, getTriggers, getUrls } from './utils';
 import { Type } from '../data/types';
 import { TableChallenges } from '../views/TableSelectionView';
 
@@ -74,8 +74,10 @@ export interface DataFormulatorState {
 // Define the initial state using that type
 const initialState: DataFormulatorState = {
 
-    models: [],
-    selectedModelId: undefined,
+    models: [
+        {id: 'chatgpt', endpoint: 'http://localhost:9000', model: '4o', api_key: '', api_base: '', api_version: ''}
+    ],
+    selectedModelId: 'chatgpt',
     testedModels: [],
 
     tables: [],
@@ -86,8 +88,8 @@ const initialState: DataFormulatorState = {
     conceptShelfItems: [],
 
     //synthesizerRunning: false,
-    displayPanelSize: 550,
-    visPaneSize: 640,
+    displayPanelSize: 320,
+    visPaneSize: 30,
     conceptShelfPaneSize: 240, // 300 is a good number for derived concept cards
 
     messages: [],
@@ -160,9 +162,9 @@ export const fetchFieldSemanticType = createAsyncThunk(
             method: 'POST',
             headers: { 'Content-Type': 'application/json', },
             body: JSON.stringify({
-                token: Date.now(),
+                // token: Date.now(),
                 input_data: {name: table.id, rows: table.rows},
-                model: dfSelectors.getActiveModel(state)
+                // model: dfSelectors.getActiveModel(state)
             }),
         };
 
@@ -170,8 +172,8 @@ export const fetchFieldSemanticType = createAsyncThunk(
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 20000)
 
-        let response = await fetch(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
-
+        let response = await fetchData(getUrls().SERVER_PROCESS_DATA_ON_LOAD, {...message, signal: controller.signal })
+        clearTimeout(timeoutId);
         return response.json();
     }
 );
@@ -200,8 +202,8 @@ export const fetchCodeExpl = createAsyncThunk(
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 20000)
 
-        let response = await fetch(getUrls().CODE_EXPL_URL, {...message, signal: controller.signal })
-
+        let response = await fetchData(getUrls().CODE_EXPL_URL, {...message, signal: controller.signal })
+        clearTimeout(timeoutId);
         return response.text();
     }
 );
@@ -222,8 +224,8 @@ export const fetchAvailableModels = createAsyncThunk(
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 20000)
 
-        let response = await fetch(getUrls().CHECK_AVAILABLE_MODELS, {...message, signal: controller.signal })
-
+        let response = await fetchData(getUrls().CHECK_AVAILABLE_MODELS, {...message, signal: controller.signal })
+        clearTimeout(timeoutId);
         return response.json();
     }
 );
@@ -265,8 +267,8 @@ export const dataFormulatorSlice = createSlice({
 
             let savedState = action.payload;
 
-            state.models = savedState.models;
-            state.selectedModelId = savedState.selectedModelId;
+            state.models = savedState.models || initialState.models;
+            state.selectedModelId = savedState.selectedModelId || initialState.selectedModelId;
             state.testedModels = []; // models should be tested again
 
             //state.table = undefined;
@@ -286,7 +288,7 @@ export const dataFormulatorSlice = createSlice({
 
             state.chartSynthesisInProgress = [];
 
-            state.config = savedState.config;
+            state.config = savedState.config || initialState.config;
         },
         setConfig: (state, action: PayloadAction<{formulateTimeoutSeconds: number, maxRepairAttempts: number}>) => {
             state.config = action.payload;
@@ -315,8 +317,8 @@ export const dataFormulatorSlice = createSlice({
         },
         loadTable: (state, action: PayloadAction<DictTable>) => {
             let table = action.payload;
-            state.tables = [...state.tables, table];
-            state.conceptShelfItems = [...state.conceptShelfItems, ...getDataFieldItems(table)];
+            state.tables = [table];
+            state.conceptShelfItems = [...getDataFieldItems(table)];
 
             state.focusedTableId = table.id;
             state.focusedChartId = undefined;
@@ -362,6 +364,9 @@ export const dataFormulatorSlice = createSlice({
         addChart: (state, action: PayloadAction<Chart>) => {
             let chart = action.payload;
             state.charts = [chart, ...state.charts]
+        },
+        setCharts: (state, action: PayloadAction<Chart[]>) => {
+            state.charts = [...action.payload]
         },
         duplicateChart: (state, action: PayloadAction<string>) => {
             let chartId = action.payload;
@@ -496,6 +501,9 @@ export const dataFormulatorSlice = createSlice({
                 chart.encodingMap[channel2] = { fieldID: enc1.fieldID, aggregate: enc1.aggregate, bin: enc1.bin, sortBy: enc1.sortBy };
             }
         },
+        setConceptItems: (state, action: PayloadAction<FieldItem[]>) => {
+            state.conceptShelfItems = [...action.payload];
+        },
         addConceptItems: (state, action: PayloadAction<FieldItem[]>) => {
             state.conceptShelfItems = [...action.payload, ...state.conceptShelfItems];
         },
@@ -567,8 +575,8 @@ export const dataFormulatorSlice = createSlice({
         clearUnReferencedTables: (state) => {
             // remove all tables that are not referred
             let charts = state.charts;
-            let referredTableId = charts.map(chart => getDataTable(chart, state.tables, charts, state.conceptShelfItems).id);
-            state.tables = state.tables.filter(t => !(t.derive && !referredTableId.some(tableId => tableId == t.id)));
+            let referredTableId = charts.map(chart => getDataTable(chart, state.tables, charts, state.conceptShelfItems)?.id);
+            state.tables = state.tables.filter(t => !(t.derive && !referredTableId?.some(tableId => tableId == t.id)));
         },
         clearUnReferencedCustomConcepts: (state) => {
             let fieldNamesFromTables = state.tables.map(t => t.names).flat();

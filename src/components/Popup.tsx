@@ -3,7 +3,7 @@
 
 import React, { FC } from "react";
 import { AppConfig, PopupConfig } from "../app/utils";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { DictTable } from "./ComponentType";
 

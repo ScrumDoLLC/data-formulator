@@ -11,39 +11,26 @@ import {
     ModelConfig,
 } from '../app/dfSlice'
 
-import _ from 'lodash';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Radio from '@mui/material/Radio';
+import TextField from '@mui/material/TextField';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
 
-import {
-    Button,
-    Tooltip,
-    Typography,
-    IconButton,
-    DialogTitle,
-    Dialog,
-    DialogContent,
-    DialogActions,
-    Radio,
-    TextField,
-    TableContainer,
-    TableHead,
-    Table,
-    TableCell,
-    TableRow,
-    TableBody,
-    Autocomplete,
-    CircularProgress,
-    FormControl,
-    Select,
-    SelectChangeEvent,
-    MenuItem,
-    OutlinedInput,
-    Paper,
-} from '@mui/material';
-
-
-import { styled } from '@mui/material/styles';
-
-import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ClearIcon from '@mui/icons-material/Clear';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -52,7 +39,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 
 // Add interface for app configuration
 interface AppConfig {
@@ -81,7 +68,7 @@ export const ModelSelectionButton: React.FC<{}> = ({ }) => {
 
     // Fetch app configuration
     useEffect(() => {
-        fetch(getUrls().APP_CONFIG)
+        fetchData(getUrls().APP_CONFIG)
             .then(response => response.json())
             .then(data => {
                 setAppConfig(data);
@@ -109,7 +96,7 @@ export const ModelSelectionButton: React.FC<{}> = ({ }) => {
         const fetchModelOptions = async () => {
             setIsLoadingModelOptions(true);
             try {
-                const response = await fetch(getUrls().CHECK_AVAILABLE_MODELS);
+                const response = await fetchData(getUrls().CHECK_AVAILABLE_MODELS);
                 const data = await response.json();
                 
                 // Group models by provider
@@ -176,7 +163,7 @@ export const ModelSelectionButton: React.FC<{}> = ({ }) => {
                 model: model,
             }),
         };
-        fetch(getUrls().TEST_MODEL, {...message })
+        fetchData(getUrls().TEST_MODEL, {...message })
             .then((response) => response.json())
             .then((data) => {
                 let status = data["status"] || 'error';

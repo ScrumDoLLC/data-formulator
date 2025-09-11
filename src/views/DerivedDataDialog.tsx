@@ -2,21 +2,18 @@
 // Licensed under the MIT License.
 
 import { FC } from 'react'
-import {
-		Card,
-		Box,
-		Typography,
-		Dialog,
-        DialogTitle,
-        DialogContent,
-        DialogActions,
-        Button,
-        Radio,
-        styled,
-        FormControlLabel,
-        CardContent,
-        ButtonGroup,
-} from '@mui/material';
+import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Radio from '@mui/material/Radio';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import CardContent from '@mui/material/CardContent';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 import React from 'react';
 

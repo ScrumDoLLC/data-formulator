@@ -3,21 +3,18 @@
 
 import { FC, useEffect, useMemo, useState } from 'react'
 
-import {
-		Card,
-		Box,
-		Typography,
-		Dialog,
-        DialogTitle,
-        DialogContent,
-        DialogActions,
-        Button,
-        Radio,
-        styled,
-        FormControlLabel,
-        CardContent,
-        LinearProgress,
-} from '@mui/material';
+import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Radio from '@mui/material/Radio';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import CardContent from '@mui/material/CardContent';
+import LinearProgress from '@mui/material/LinearProgress';
 
 
 import React from 'react';
@@ -27,8 +24,7 @@ import { deriveTransformExamplesV2, getDomains, processCodeCandidates } from './
 import { useDispatch, useSelector } from 'react-redux';
 import { DataFormulatorState, dfActions } from '../app/dfSlice';
 
-import prettier from "prettier";
-import parserBabel from 'prettier/parser-babel';
+import beautify from "js-beautify";
 import { CodexDialogBox } from './ConceptCard';
 import { CodeBox } from './VisualizationView';
 import { CustomReactTable } from './ReactTable';
@@ -180,11 +176,13 @@ export const DisambiguationDialog: FC<DisambiguationDialogProps> = function Disa
 
                         let formattedCode = code;
                         try {
-                            formattedCode = prettier.format(code, {
-                                parser: "babel",
-                                plugins: [parserBabel],
-                                printWidth: 60
-                            })
+                            formattedCode = beautify.js(code, {
+                                indent_size: 2,
+                                max_preserve_newlines: 2,
+                                wrap_line_length: 60,
+                                end_with_newline: false,
+                                space_in_empty_paren: true,
+                            }).trim();
                         } catch {
 
                         }

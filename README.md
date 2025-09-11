@@ -16,7 +16,7 @@ Transform data and create rich visualizations iteratively with AI 🪄. Try Data
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/data-formulator?quickstart=1)
 
 <kbd>
-  <a target="_blank" rel="noopener noreferrer" href="https://codespaces.new/microsoft/data-formulator?quickstart=1" title="open Data Formulator in GitHub Codespaces"><img src="public/data-formulator-screenshot.png"></a>
+  <a target="_blank" rel="noopener noreferrer" href="https://codespaces.new/microsoft/data-formulator?quickstart=1" title="open Data Formulator in GitHub Codespaces"><img src="https://github.com/microsoft/data-formulator/blob/main/public/data-formulator-screenshot.png?raw=true"></a>
 </kbd>
 
 

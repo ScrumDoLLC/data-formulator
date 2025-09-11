@@ -3,29 +3,29 @@
 
 import { FC, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { DataFormulatorState, dfActions, dfSelectors } from '../app/dfSlice';
-import { LinearProgress, styled, TextField, Tooltip } from '@mui/material';
+import { DataFormulatorState, dfActions } from '../app/dfSlice';
+import LinearProgress from '@mui/material/LinearProgress';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 
 import { useTheme } from '@mui/material/styles';
-import { alpha } from "@mui/material";
+import { alpha } from '@mui/material/styles';
 
-import {
-    Chip,
-    Box,
-    Typography,
-    Button,
-    FormControl,
-    Select,
-    MenuItem,
-    Card,
-    IconButton,
-    FormLabel,
-    RadioGroup,
-    Radio,
-    FormControlLabel,
-    CardContent,
-    ClickAwayListener,
-} from '@mui/material';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Card from '@mui/material/Card';
+import IconButton from '@mui/material/IconButton';
+import FormLabel from '@mui/material/FormLabel';
+import RadioGroup from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import CardContent from '@mui/material/CardContent';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
@@ -41,12 +41,10 @@ import { FieldItem, Channel, EncodingItem, AggrOp, AGGR_OP_LIST,
         ConceptTransformation, Chart, duplicateField } from "../components/ComponentType";
 import { EncodingDropResult } from "../views/ConceptShelf";
 
-import _ from 'lodash';
-
 import '../scss/EncodingShelf.scss';
 import AnimateHeight from 'react-animate-height';
 import { deriveTransformExamplesV2, getDomains, getIconFromType, groupConceptItems } from './ViewUtils';
-import { getUrls } from '../app/utils';
+import { fetchData, getUrls } from '../app/utils';
 import { Type } from '../data/types';
 
 
@@ -133,7 +131,7 @@ export const EncodingBox: FC<EncodingBoxProps> = function EncodingBox({ channel,
     // use tables for infer domains
     const tables = useSelector((state: DataFormulatorState) => state.tables);
     const charts = useSelector((state: DataFormulatorState) => state.charts);
-    let activeModel = useSelector(dfSelectors.getActiveModel);
+    // let activeModel = useSelector(dfSelectors.getActiveModel);
     
     let chart = charts.find(c => c.id == chartId) as Chart;
     
@@ -275,11 +273,11 @@ export const EncodingBox: FC<EncodingBoxProps> = function EncodingBox({ channel,
                 token: token,
                 items: domainItems,
                 field: field?.name,
-                model: activeModel
+                // model: activeModel
             }),
         };
 
-        fetch(getUrls().SORT_DATA_URL, message)
+        fetchData(getUrls().SORT_DATA_URL, message)
             .then((response) => response.json())
             .then((data) => {
                 setAutoSortInferRunning(false);
